@@ -1,9 +1,9 @@
 ## This repository contains the data and code that replicates tables and figures for the following paper:
-__Title:__ No crowding out among those terminated from an ongoing PES program in Colombia
-__Authors:__ Esther Blancoa,b, Lina Morosc, Alexander Pfaffd, Ivo Steimanise, Maria Alejandra Velezf, Björn Vollane
-__Affiliations:__ a Faculty of Economics and Statistics, University of Innsbruck, Austria; b The Ostrom Workshop, Indiana University, USA; c Faculty of Business Administration, University of Los Andes, Colombia; d Sanford School of Public Policy, Duke University, USA; e School of Business and Economics, University of Marburg, Germany; f Faculty of Economics, University of Los Andes, Colombia
-__JEL Codes:__ H0, Q28, D91
-__Keywords:__ payments for ecosystem services, crowding, motivations, conservation, Colombia
+__Title:__ No crowding out among those terminated from an ongoing PES program in Colombia <br>
+__Authors:__ Esther Blanco<sup>a,b</sup>, Lina Moros<sup>c</sup>, Alexander Pfaff<sup>d</sup>, Ivo Steimanis<sup>e</sup>, Maria Alejandra Velez<sup>f</sup>, Björn Vollan<sup>e</sup> <br>
+__Affiliations:__ <sup>a</sup> Faculty of Economics and Statistics, University of Innsbruck, Austria; <sup>b</sup> The Ostrom Workshop, Indiana University, USA; <sup>c</sup> Faculty of Business Administration, University of Los Andes, Colombia; <sup>d</sup> Sanford School of Public Policy, Duke University, USA; <sup>e</sup> School of Business and Economics, University of Marburg, Germany; <sup>f</sup> Faculty of Economics, University of Los Andes, Colombia  <br>
+__JEL Codes:__ H0, Q28, D91  <br>
+__Keywords:__ payments for ecosystem services, crowding, motivations, conservation, Colombia  <br>
 
 ### License
 The data and code are licensed under a Creative Commons Attribution 4.0 International Public License. See LICENSE.txt for details.
