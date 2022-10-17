@@ -4,7 +4,7 @@ __Authors:__ Esther Blanco<sup>a,b</sup>, Lina Moros<sup>c</sup>, Alexander Pfaf
 __Affiliations:__ <sup>a</sup> Faculty of Economics and Statistics, University of Innsbruck, Austria; <sup>b</sup> The Ostrom Workshop, Indiana University, USA; <sup>c</sup> Faculty of Business Administration, University of Los Andes, Colombia; <sup>d</sup> Sanford School of Public Policy, Duke University, USA; <sup>e</sup> School of Business and Economics, University of Marburg, Germany; <sup>f</sup> Faculty of Economics, University of Los Andes, Colombia  <br>
 __JEL Codes:__ H0, Q28, D91  <br>
 __Keywords:__ payments for ecosystem services, crowding, motivations, conservation, Colombia  <br>
-__Zenodo:__ [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7215077.svg)](https://doi.org/10.5281/zenodo.7215077)
+__Zenodo:__ [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7215083.svg)](https://doi.org/10.5281/zenodo.7215083)
 
 ### License
 The data and code are licensed under a Creative Commons Attribution 4.0 International Public License. See LICENSE.txt for details.
