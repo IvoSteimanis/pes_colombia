@@ -1,0 +1,1249 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/logs/2022.03.02-16.42.42.log.txt
+  log type:  text
+ opened on:   2 Mar 2022, 16:42:42
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time:  2 Mar 2022 16:42:42
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmatapath;lmatapostest;lmata
+> pss;lmatasem;lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensity and "xx yy zz%50" red
+> uces transparency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" ///
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" ///
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all other text
+. 
+. }
+
+. * -------------------------------------------------
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. *--------------------------------------------------------------------
+. * SCRIPT: 02_analysis.do
+. * PURPOSE: replicates the tables and figures and saves the results
+. *--------------------------------------------------------------------
+. 
+. *--------------------------------------------------
+. * STRUCTURE OF THE DO-FILE
+. /*
+> 
+>         1) Analysis Main Manuscript
+>         2) Analysis Supplementary Online Materials
+> 
+> */
+. *--------------------------------------------------
+. * Load cleaned dataset
+. clear
+
+. use "$working_ANALYSIS/processed/psa_colombia_rdy.dta"
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. 
+. 
+. ** Donations analysis
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. *--------------------------------------------------------------------
+. * SCRIPT: 02_analysis.do
+. * PURPOSE: replicates the tables and figures and saves the results
+. *--------------------------------------------------------------------
+. 
+. *--------------------------------------------------
+. * STRUCTURE OF THE DO-FILE
+. /*
+> 
+>         1) Analysis Main Manuscript
+>         2) Analysis Supplementary Online Materials
+> 
+> */
+. *--------------------------------------------------
+. * Load cleaned dataset
+. clear
+
+. use "$working_ANALYSIS/processed/psa_colombia_rdy.dta"
+
+. 
+. 
+. 
+. *--------------------------------------------------------------
+. * 1) ANALYSIS MAIN MANUSCRIPT
+. *--------------------------------------------------------------
+. *define globals
+. 
+. 
+. * Balancing check: Participants vs. Non-participants
+. *move these generates to the clean file later
+. gen pes_participation = 1 if phase_d ==8
+(123 missing values generated)
+
+. replace pes_participation = 2 if phase_d == 1
+(56 real changes made)
+
+. replace pes_participation = 3 if phase_d == 2
+(67 real changes made)
+
+. lab def pes_part 1 "Non-participant" 2 "Phase 1 only" 3 "Phase 1 & 2", replace
+
+. lab val pes_participation pes_part
+
+. 
+. gen max_primary = 0 
+
+. replace max_primary = 1 if id_educ < 4
+(93 real changes made)
+
+. lab var max_primary "Participant completed up to primary school but not more."
+
+. 
+. gen collective_action = 1 if community_activ==1
+(109 missing values generated)
+
+. replace collective_action = 2 if community_activ==5
+(68 real changes made)
+
+. replace collective_action = 3 if community_activ==4
+(25 real changes made)
+
+. replace collective_action = 4 if community_activ==3
+(15 real changes made)
+
+. replace collective_action = 5 if community_activ==2
+(1 real change made)
+
+. lab def collective_lab 1 "Never" 2 "Couple times a year" 3 "Once a month" 4 "Once a week" 5 "Everyday", replace
+
+. lab val collective_action collective_lab
+
+. gen never_collective = 0
+
+. replace never_collective = 1 if collective_action == 1
+(94 real changes made)
+
+. lab var never_collective "=1 if participant never participates in community activities."
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. * Differences in project perception: Phase 1 vs Phase 1 & 2
+. gen amount_per_payment = payment_t / payment_n
+(83 missing values generated)
+
+. gen amount_per_payment_ppp = amount_per_payment / 1322.16
+(83 missing values generated)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. * Treatment balance
+. replace primed = . if pes_participation == 1
+(80 real changes made, 80 to missing)
+
+. tab primed pes_participation
+
+           |   pes_participation
+    primed | Phase 1 o  Phase 1 & |     Total
+-----------+----------------------+----------
+         0 |        30         33 |        63 
+         1 |        26         34 |        60 
+-----------+----------------------+----------
+     Total |        56         67 |       123 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. 
+. ** Donations analysis
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. * Correlational evidence: Donations across groups
+. *Likelihood to donate (extensive margin)
+. tab pes_participation, gen(group_)
+
+pes_participati |
+             on |      Freq.     Percent        Cum.
+----------------+-----------------------------------
+Non-participant |         80       39.41       39.41
+   Phase 1 only |         56       27.59       67.00
+    Phase 1 & 2 |         67       33.00      100.00
+----------------+-----------------------------------
+          Total |        203      100.00
+
+. 
+. *Amount donated (intensive margin)
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. global groups group_2 group_3
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups, vce(hc3)
+
+Linear regression                               Number of obs     =        203
+                                                F(2, 200)         =       6.40
+                                                Prob > F          =     0.0020
+                                                R-squared         =     0.0627
+                                                Root MSE          =     6977.4
+
+------------------------------------------------------------------------------
+             |             Robust HC3
+  donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     group_2 |   1771.429   1164.546     1.52   0.130    -524.9361    4067.793
+     group_3 |   4222.388   1187.641     3.56   0.000     1880.484    6564.292
+       _cons |       6800   668.7092    10.17   0.000     5481.375    8118.625
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. *Amount donated (intensive margin)
+. *Amount
+. reg donation_n $groups, vce(hc3)
+
+Linear regression                               Number of obs     =        203
+                                                F(2, 200)         =       6.40
+                                                Prob > F          =     0.0020
+                                                R-squared         =     0.0627
+                                                Root MSE          =     6977.4
+
+------------------------------------------------------------------------------
+             |             Robust HC3
+  donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     group_2 |   1771.429   1164.546     1.52   0.130    -524.9361    4067.793
+     group_3 |   4222.388   1187.641     3.56   0.000     1880.484    6564.292
+       _cons |       6800   668.7092    10.17   0.000     5481.375    8118.625
+------------------------------------------------------------------------------
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table3_donation_amount", addstat("Adjusted R-squared", e(r2_a)) adec(3) drop() word ctitle("Donation
+>  Amount") dec(2) replace
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table3_donation_amount.rtf
+dir : seeout
+
+. reg donation_n $groups $socio_economic, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(8, 189)         =      11.17
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3030
+                                                Root MSE          =     6018.9
+
+-------------------------------------------------------------------------------
+              |             Robust HC3
+   donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+      group_2 |   108.7962   1048.843     0.10   0.917    -1960.146    2177.739
+      group_3 |   3335.542   1059.334     3.15   0.002     1245.905    5425.179
+       female |   558.0498   1104.508     0.51   0.614    -1620.697    2736.797
+       id_age |   -48.8717   31.02821    -1.58   0.117    -110.0778    12.33439
+  max_primary |  -1364.459   1065.976    -1.28   0.202    -3467.198    738.2791
+income_hh_ppp |   1.191221    .220183     5.41   0.000      .756889    1.625553
+      farms_n |  -72.57585   355.0149    -0.20   0.838    -772.8765    627.7248
+    land_size |   10.73699   4.488477     2.39   0.018     1.883044    19.59094
+        _cons |   8680.452   2114.928     4.10   0.000     4508.555    12852.35
+-------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+
+       F(  6,   189) =   11.84
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table3_donation_amount", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1') adec(3) wor
+> d ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table3_donation_amount.rtf
+dir : seeout
+
+. reg donation_n $groups $socio_economic $trust_involvement, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(15, 182)        =       6.07
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3334
+                                                Root MSE          =     5998.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   340.1781   1050.582     0.32   0.746    -1732.709    2413.065
+         group_3 |   3479.736   1094.153     3.18   0.002      1320.88    5638.591
+          female |   747.4939   1246.435     0.60   0.549    -1711.827    3206.815
+          id_age |  -59.67846   32.60675    -1.83   0.069    -124.0143    4.657397
+     max_primary |  -754.4389   1146.051    -0.66   0.511    -3015.693    1506.815
+   income_hh_ppp |   1.269645   .2767875     4.59   0.000     .7235202     1.81577
+         farms_n |  -104.7255   400.2677    -0.26   0.794    -894.4873    685.0363
+       land_size |   10.55503   4.753036     2.22   0.028     1.176891    19.93317
+    trust_people |   329.3176   515.5149     0.64   0.524    -687.8366    1346.472
+trust_townpeople |  -2.428442   526.1949    -0.00   0.996    -1040.655    1035.798
+   trust_familiy |  -239.1126   349.2512    -0.68   0.494    -928.2146    449.9894
+      civicorg_d |  -1647.909   1128.401    -1.46   0.146    -3874.339      578.52
+ pruductiveorg_d |   1263.371    1250.18     1.01   0.314    -1203.339    3730.082
+        polspace |   892.7541   471.5827     1.89   0.060    -37.71815    1823.226
+never_collective |   802.7056   1046.416     0.77   0.444    -1261.961    2867.372
+           _cons |   5782.615   2837.089     2.04   0.043      184.799    11380.43
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+
+       F(  6,   182) =    8.47
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   182) =    1.23
+            Prob > F =    0.2868
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table3_donation_amount", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Co
+> mmunity involvement", `F2') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table3_donation_amount.rtf
+dir : seeout
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. est store donation_amount
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+
+       F(  6,   177) =    6.93
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   177) =    1.30
+            Prob > F =    0.2536
+
+. local F2 = r(p)
+
+. testparm $ngo_experience
+
+ ( 1)  tropenbos_d = 0
+ ( 2)  gaia_d = 0
+ ( 3)  omacha_d = 0
+ ( 4)  dononce = 0
+ ( 5)  donmany = 0
+
+       F(  5,   177) =    1.49
+            Prob > F =    0.1960
+
+. local F3 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table3_donation_amount", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Co
+> mmunity involvement", `F2', "Experience with NGOs", `F3') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table3_donation_amount.rtf
+dir : seeout
+
+. 
+. 
+. coefplot (donation_amount),   keep(group_2 group_3 primed)  coeflabels(group_2  = "Phase 1 only"  group_3 = "Phase 1 & 2" primed = "Recall") xline(0
+> , lpattern(dash) lcolor(gs3)) title("{bf:A } Donation amount", span pos(11) size()) xtitle("Regression estimated impact relative to non-participants
+>  in Pesos")    xla(-2000(1000)8000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8 *.2) recast(rcap)) mlabel(cond(@pval<
+> .01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12) 
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_a.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. iegraph group_2 group_3, title("{bf: Panel A} Across groups", size(medium)) varlabels yla(0(5000)20000, nogrid) xla(, nogrid) barlabel  barlabelform
+> at(%5.1f) mlabpos(11) mlabsize(medsmall) legend(ring(1) size(medsmall) pos(6) rows(1)) ysize(2) xsize(3.465) ytitle("Donation in COP", size(medsmall
+> ))
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n primed $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        118
+                                                F(19, 98)         =       8.50
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.4436
+                                                Root MSE          =     6144.9
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+          primed |  -247.3416   1288.479    -0.19   0.848    -2804.285    2309.602
+          female |   2093.952   1877.955     1.12   0.268    -1632.788    5820.692
+          id_age |  -149.2996   53.90404    -2.77   0.007    -256.2704   -42.32874
+     max_primary |  -964.3032   1805.596    -0.53   0.595     -4547.45    2618.844
+   income_hh_ppp |   1.213942   .5168299     2.35   0.021     .1883102    2.239574
+         farms_n |   1108.225   601.0138     1.84   0.068    -84.46747    2300.917
+       land_size |   7.368642   6.533219     1.13   0.262    -5.596318     20.3336
+    trust_people |   701.6817   871.2496     0.81   0.423    -1027.285    2430.648
+trust_townpeople |   529.4019   936.3951     0.57   0.573    -1328.844    2387.648
+   trust_familiy |  -320.4509    572.153    -0.56   0.577     -1455.87    814.9681
+      civicorg_d |  -3490.677   1695.064    -2.06   0.042    -6854.477   -126.8764
+ pruductiveorg_d |   3426.147   1744.398     1.96   0.052    -35.55413    6887.848
+        polspace |   513.8448   733.3794     0.70   0.485    -941.5227    1969.212
+never_collective |   2734.979   1500.989     1.82   0.071    -243.6848    5713.642
+     tropenbos_d |  -95.73426   2687.741    -0.04   0.972    -5429.469        5238
+          gaia_d |   2077.581    2204.06     0.94   0.348    -2296.304    6451.467
+        omacha_d |   6786.363   3128.859     2.17   0.033      577.244    12995.48
+         dononce |  -1620.983   2518.082    -0.64   0.521    -6618.035     3376.07
+         donmany |   469.4622    1981.84     0.24   0.813    -3463.434    4402.358
+           _cons |   8483.605   4720.743     1.80   0.075    -884.5548    17851.77
+----------------------------------------------------------------------------------
+
+. iegraph primed, title("{bf: Panel A} by treatment", size(medium)) varlabels yla(0(5000)20000, nogrid) xla(, nogrid) barlabel  barlabelformat(%5.1f) 
+> mlabpos(11) mlabsize(medsmall) legend(ring(1) size(medsmall) pos(6) rows(1)) ysize(2) xsize(3.465) ytitle("Donation in COP", size(medsmall))
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. lab def prime_lab 0 "Control" 1 "Treatment", replace
+
+. lab val primed prime_lab
+
+. 
+end of do-file
+
+. tab primed
+
+     primed |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Control |         63       51.22       51.22
+  Treatment |         60       48.78      100.00
+------------+-----------------------------------
+      Total |        123      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. gen primed_group2=primed*group_2
+(80 missing values generated)
+
+. gen primed_group3=primed*group_3
+(80 missing values generated)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n primed group_3 primed_group3 $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        118
+                                                F(21, 96)         =       6.73
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.4674
+                                                Root MSE          =     6074.2
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+          primed |   393.3053   1998.346     0.20   0.844    -3573.381    4359.991
+         group_3 |   3132.038    2076.94     1.51   0.135    -990.6549     7254.73
+   primed_group3 |  -1402.738   2848.817    -0.49   0.624    -7057.594    4252.118
+          female |   2293.892   1850.565     1.24   0.218    -1379.451    5967.234
+          id_age |   -132.644   50.60053    -2.62   0.010    -233.0853   -32.20278
+     max_primary |  -987.7696   1795.292    -0.55   0.583    -4551.397    2575.858
+   income_hh_ppp |   1.367117   .4894895     2.79   0.006     .3954876    2.338746
+         farms_n |   761.6161   612.2109     1.24   0.217    -453.6129    1976.845
+       land_size |    8.97043   6.254658     1.43   0.155    -3.444967    21.38583
+    trust_people |    572.714   864.3627     0.66   0.509    -1143.032     2288.46
+trust_townpeople |   490.8542   895.4106     0.55   0.585    -1286.522     2268.23
+   trust_familiy |  -288.8393    568.363    -0.51   0.612    -1417.031    839.3523
+      civicorg_d |   -3519.85   1744.665    -2.02   0.046    -6982.984   -56.71681
+ pruductiveorg_d |   3126.937   1809.184     1.73   0.087    -464.2659    6718.139
+        polspace |   647.1951   746.6712     0.87   0.388    -834.9356    2129.326
+never_collective |   2143.033   1589.372     1.35   0.181    -1011.845    5297.912
+     tropenbos_d |    672.432   2201.819     0.31   0.761    -3698.143    5043.007
+          gaia_d |    2090.68   2187.283     0.96   0.342    -2251.042    6432.402
+        omacha_d |   5661.056   2999.987     1.89   0.062    -293.8713    11615.98
+         dononce |  -1702.716   2392.521    -0.71   0.478    -6451.832      3046.4
+         donmany |   252.9354   1976.821     0.13   0.898    -3671.023    4176.893
+           _cons |   6434.499   4547.983     1.41   0.160    -2593.177    15462.17
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n primed group_3 primed_group3 , vce(hc3)
+
+Linear regression                               Number of obs     =        123
+                                                F(3, 119)         =       1.08
+                                                Prob > F          =     0.3619
+                                                R-squared         =     0.0267
+                                                Root MSE          =       7636
+
+-------------------------------------------------------------------------------
+              |             Robust HC3
+   donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       primed |  -707.6923    1946.31    -0.36   0.717     -4561.58    3146.196
+      group_3 |   2069.697   1925.242     1.08   0.285    -1742.475    5881.869
+primed_group3 |   811.5247   2785.462     0.29   0.771    -4703.968    6327.018
+        _cons |       8900     1317.9     6.75   0.000     6290.426    11509.57
+-------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. iegraph group_2 group_3, title("{bf: Panel A} Across groups", size(medium)) varlabels yla(0(5000)20000, nogrid) xla(, nogrid) barlabel  barlabelform
+> at(%5.1f) mlabpos(11) mlabsize(medsmall) legend(ring(1) size(medsmall) pos(6) rows(1)) ysize(2) xsize(3.465) ytitle("Donation in COP", size(medsmall
+> ))
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. iegraph group_2 group_3, title("{bf: Panel A} Across groups", size(medium)) varlabels yla(0(5000)20000, nogrid) xla(, nogrid) barlabel  barlabelform
+> at(%5.1f) mlabpos(11) mlabsize(medsmall) legend(ring(1) size(medsmall) pos(6) rows(1)) ysize(2) xsize(3.465) ytitle("Donation in COP", size(medsmall
+> ))
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_a.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n primed group_3 primed_group3 $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        118
+                                                F(21, 96)         =       6.73
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.4674
+                                                Root MSE          =     6074.2
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+          primed |   393.3053   1998.346     0.20   0.844    -3573.381    4359.991
+         group_3 |   3132.038    2076.94     1.51   0.135    -990.6549     7254.73
+   primed_group3 |  -1402.738   2848.817    -0.49   0.624    -7057.594    4252.118
+          female |   2293.892   1850.565     1.24   0.218    -1379.451    5967.234
+          id_age |   -132.644   50.60053    -2.62   0.010    -233.0853   -32.20278
+     max_primary |  -987.7696   1795.292    -0.55   0.583    -4551.397    2575.858
+   income_hh_ppp |   1.367117   .4894895     2.79   0.006     .3954876    2.338746
+         farms_n |   761.6161   612.2109     1.24   0.217    -453.6129    1976.845
+       land_size |    8.97043   6.254658     1.43   0.155    -3.444967    21.38583
+    trust_people |    572.714   864.3627     0.66   0.509    -1143.032     2288.46
+trust_townpeople |   490.8542   895.4106     0.55   0.585    -1286.522     2268.23
+   trust_familiy |  -288.8393    568.363    -0.51   0.612    -1417.031    839.3523
+      civicorg_d |   -3519.85   1744.665    -2.02   0.046    -6982.984   -56.71681
+ pruductiveorg_d |   3126.937   1809.184     1.73   0.087    -464.2659    6718.139
+        polspace |   647.1951   746.6712     0.87   0.388    -834.9356    2129.326
+never_collective |   2143.033   1589.372     1.35   0.181    -1011.845    5297.912
+     tropenbos_d |    672.432   2201.819     0.31   0.761    -3698.143    5043.007
+          gaia_d |    2090.68   2187.283     0.96   0.342    -2251.042    6432.402
+        omacha_d |   5661.056   2999.987     1.89   0.062    -293.8713    11615.98
+         dononce |  -1702.716   2392.521    -0.71   0.478    -6451.832      3046.4
+         donmany |   252.9354   1976.821     0.13   0.898    -3671.023    4176.893
+           _cons |   6434.499   4547.983     1.41   0.160    -2593.177    15462.17
+----------------------------------------------------------------------------------
+
+. est donation_primed
+subcommand estimates donation_primed is unrecognized
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n primed group_3 primed_group3 $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        118
+                                                F(21, 96)         =       6.73
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.4674
+                                                Root MSE          =     6074.2
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+          primed |   393.3053   1998.346     0.20   0.844    -3573.381    4359.991
+         group_3 |   3132.038    2076.94     1.51   0.135    -990.6549     7254.73
+   primed_group3 |  -1402.738   2848.817    -0.49   0.624    -7057.594    4252.118
+          female |   2293.892   1850.565     1.24   0.218    -1379.451    5967.234
+          id_age |   -132.644   50.60053    -2.62   0.010    -233.0853   -32.20278
+     max_primary |  -987.7696   1795.292    -0.55   0.583    -4551.397    2575.858
+   income_hh_ppp |   1.367117   .4894895     2.79   0.006     .3954876    2.338746
+         farms_n |   761.6161   612.2109     1.24   0.217    -453.6129    1976.845
+       land_size |    8.97043   6.254658     1.43   0.155    -3.444967    21.38583
+    trust_people |    572.714   864.3627     0.66   0.509    -1143.032     2288.46
+trust_townpeople |   490.8542   895.4106     0.55   0.585    -1286.522     2268.23
+   trust_familiy |  -288.8393    568.363    -0.51   0.612    -1417.031    839.3523
+      civicorg_d |   -3519.85   1744.665    -2.02   0.046    -6982.984   -56.71681
+ pruductiveorg_d |   3126.937   1809.184     1.73   0.087    -464.2659    6718.139
+        polspace |   647.1951   746.6712     0.87   0.388    -834.9356    2129.326
+never_collective |   2143.033   1589.372     1.35   0.181    -1011.845    5297.912
+     tropenbos_d |    672.432   2201.819     0.31   0.761    -3698.143    5043.007
+          gaia_d |    2090.68   2187.283     0.96   0.342    -2251.042    6432.402
+        omacha_d |   5661.056   2999.987     1.89   0.062    -293.8713    11615.98
+         dononce |  -1702.716   2392.521    -0.71   0.478    -6451.832      3046.4
+         donmany |   252.9354   1976.821     0.13   0.898    -3671.023    4176.893
+           _cons |   6434.499   4547.983     1.41   0.160    -2593.177    15462.17
+----------------------------------------------------------------------------------
+
+. est donation_primed
+subcommand estimates donation_primed is unrecognized
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. est store donation_primed
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x G3") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:b } By treatment", span pos(11) size()) xtitle("Regression estimated impact relative 
+> to Control in Pesos")    xla(-2000(1000)8000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8 *.2) recast(rcap)) mlabel(c
+> ond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12) legend(lab(ring(1) size(medsmall) pos(6) rows(1)
+> )
+) required
+r(100);
+
+end of do-file
+
+r(100);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x G3") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:b } By treatment", span pos(11) size()) xtitle("Regression estimated impact relative 
+> to Control in Pesos")    xla(-2000(1000)8000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8 *.2) recast(rcap)) mlabel(c
+> ond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12) legend(ring(1) size(medsmall) pos(6) rows(1))
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x G3") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Regressio
+> n estimated impact relative to Control in Pesos")    xla(-2000(1000)8000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8
+>  *.2) recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x Phase 1&2") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Re
+> gression estimated impact relative to Control in Pesos")    xla(-2000(1000)8000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lco
+> lor(*.8 *.2) recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12)
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_b.gph", replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_b.gph not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_b.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x Phase 1&2") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Re
+> gression estimated impact relative to Control in Pesos")    xla(-10000(5000)10000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  l
+> color(*.8 *.2) recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion: T x Phase 1&2") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Re
+> gression estimated impact relative to Control in Pesos")    xla(-10000(5000)10000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  l
+> color(*.8 *.2) recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12)
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_b.gph saved)
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure1_a.gph" "$working_ANALYSIS/results/intermediate/figure1_b.gph", rows(1) xsize(4) ysize(3)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure1_a.gph" "$working_ANALYSIS/results/intermediate/figure1_b.gph", rows(1)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Regression estima
+> ted impact relative to Control in Pesos")    xla(-10000(5000)10000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8 *.2) 
+> recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12) ysize(2) xsize(3.465)
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_b.gph saved)
+
+. 
+. gr combine "$working_ANALYSIS/results/intermediate/figure1_a.gph" "$working_ANALYSIS/results/intermediate/figure1_b.gph", rows(1) xsize(4) ysize(2)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. iegraph group_2 group_3, title("{bf: A} Across groups", size(medium)) varlabels yla(0(5000)20000, nogrid) xla(, nogrid) barlabel  barlabelformat(%5.
+> 1f) mlabpos(11) mlabsize(medsmall) legend(ring(1) size(medsmall) pos(6) rows(1)) ysize(2) xsize(3.465) ytitle("Donation in COP", size(medsmall))
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_a.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. coefplot (donation_primed),   keep(primed group_3 primed_group3)  coeflabels(primed  = "Treatment"  group_3 = "Phase 1 & 2" primed_group3 = "Interac
+> tion") xline(0, lpattern(dash) lcolor(gs3)) title("{bf:B } Treatment effects among PES participants", span pos(11) size()) xtitle("Regression estima
+> ted impact relative to Control in Pesos")    xla(-10000(5000)10000, nogrid) grid(none) levels(95 90) ciopts(lwidth(0.3 1)  msize()  lcolor(*.8 *.2) 
+> recast(rcap)) mlabel(cond(@pval<.01, "***", cond(@pval<.05, "**", cond(@pval<.1, "*", ""))))  mlabsize() mlabposition(12) ysize(2) xsize(3.465)
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_b.gph saved)
+
+. 
+. gr combine "$working_ANALYSIS/results/intermediate/figure1_a.gph" "$working_ANALYSIS/results/intermediate/figure1_b.gph", rows(1) xsize(4) ysize(2)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style gs not found in class color, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. gr save "$working_ANALYSIS/results/intermediate/figure1_donation_amount.gph", replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_donation_amount.gph not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_donation_amount.gph saved)
+
+. gr export "$working_ANALYSIS/results/intermediate/figure1_donation_amount.tif", width(4000) replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_donation_amount.tif not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure1_donation_amount.tif written in TIFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. gr export "$working_ANALYSIS/results/figures/figure1_donation_amount.tif", width(4000) replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure1_donation_amount.tif not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure1_donation_amount.tif written in TIFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   230.8384   1109.974     0.21   0.835    -1959.648    2421.325
+         group_3 |    3364.03   1122.049     3.00   0.003     1149.714    5578.346
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   5885.235   2887.467     2.04   0.043     186.9427    11583.53
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. testparm group_2 group_3
+
+ ( 1)  group_2 = 0
+ ( 2)  group_3 = 0
+
+       F(  2,   177) =    5.05
+            Prob > F =    0.0074
+
+. 
+end of do-file
+
+. help testparm
+
+. di 3364.04 - 230.84
+3133.2
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n group_1 group_3 $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_1 |  -230.8384   1109.974    -0.21   0.835    -2421.325    1959.648
+         group_3 |   3133.192   1230.434     2.55   0.012     704.9838    5561.399
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   6116.073   2826.335     2.16   0.032     538.4229    11693.72
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4bc4_000000.tmp"
+
+. reg donation_n group_1 group_3 $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(20, 177)        =       6.10
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3525
+                                                Root MSE          =     5994.4
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_1 |  -230.8384   1109.974    -0.21   0.835    -2421.325    1959.648
+         group_3 |   3133.192   1230.434     2.55   0.012     704.9838    5561.399
+          female |   551.2648   1259.344     0.44   0.662    -1933.997    3036.526
+          id_age |   -63.3135   35.18227    -1.80   0.074    -132.7442    6.117205
+     max_primary |  -604.7473   1184.893    -0.51   0.610    -2943.082    1733.588
+   income_hh_ppp |   1.209866   .2699904     4.48   0.000     .6770514     1.74268
+         farms_n |  -36.81365   422.8604    -0.09   0.931    -871.3106    797.6833
+       land_size |   10.39533   4.730316     2.20   0.029     1.060255    19.73041
+    trust_people |   278.3054   531.6895     0.52   0.601    -770.9611    1327.572
+trust_townpeople |  -43.96001   534.0027    -0.08   0.934    -1097.791    1009.871
+   trust_familiy |  -205.0619   346.9777    -0.59   0.555    -889.8075    479.6838
+      civicorg_d |  -2094.605    1154.95    -1.81   0.071    -4373.849    184.6384
+ pruductiveorg_d |   1232.969   1275.104     0.97   0.335    -1283.395    3749.332
+        polspace |   868.7501   474.3524     1.83   0.069    -67.36407    1804.864
+never_collective |   829.4278   1088.462     0.76   0.447    -1318.605    2977.461
+     tropenbos_d |   2532.497   1959.863     1.29   0.198    -1335.208    6400.203
+          gaia_d |   1589.654   1602.506     0.99   0.323    -1572.824    4752.131
+        omacha_d |   2562.778   2722.406     0.94   0.348    -2809.775    7935.331
+         dononce |  -166.2777   1638.624    -0.10   0.919    -3400.033    3067.478
+         donmany |   637.7344   1575.673     0.40   0.686    -2471.788    3747.257
+           _cons |   6116.073   2826.335     2.16   0.032     538.4229    11693.72
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. exit, clear

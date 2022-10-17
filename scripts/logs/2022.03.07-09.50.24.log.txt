@@ -1,0 +1,1736 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/logs/2022.03.07-09.50.24.log.txt
+  log type:  text
+ opened on:   7 Mar 2022, 09:50:24
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time:  7 Mar 2022 09:50:24
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmatapath;lmatapostest;lmata
+> pss;lmatasem;lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensity and "xx yy zz%50" red
+> uces transparency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" ///
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" ///
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all other text
+. 
+. }
+
+. * -------------------------------------------------
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. *--------------------------------------------------------------------
+. * SCRIPT: 02_analysis.do
+. * PURPOSE: replicates the tables and figures and saves the results
+. *--------------------------------------------------------------------
+. 
+. *--------------------------------------------------
+. * STRUCTURE OF THE DO-FILE
+. /*
+> 
+>         1) Analysis Main Manuscript
+>         2) Analysis Supplementary Online Materials
+> 
+> */
+. *--------------------------------------------------
+. * Load cleaned dataset
+. clear
+
+. use "$working_ANALYSIS/processed/psa_colombia_rdy.dta"
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gen donation_percent = (donation_n*100) / 20000
+
+. replace donation_percent = 0 if donation_n == 0
+(0 real changes made)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global motivations motivation1-motivation5
+
+. 
+end of do-file
+
+. sum $motivation
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |        203        2018           0       2018       2018
+     id_name |          0
+   id_cedula |        203    5.91e+07    1.94e+08        166   1.11e+09
+ treatment_d |        203    2.492611    1.279579          1          4
+     phase_d |        203     4.08867    3.185987          1          8
+-------------+---------------------------------------------------------
+     panel_d |        203    .3694581    .4838513          0          1
+   assistant |          0
+        date |          0
+place_survey |          0
+          id |        203    255.4877    240.7229          1       2025
+-------------+---------------------------------------------------------
+  remember_d |        118    .9745763    .1580795          0          1
+    land_mun |          0
+payment_re~d |        118    .9661017    .1817391          0          1
+   payment_n |        120    3.116667    1.360816          1          9
+   payment_t |        121     6661896     9837243       9999   7.00e+07
+-------------+---------------------------------------------------------
+   payment_u |          0
+   know_part |        203     .635468    .4824885          0          1
+ know_part_n |        129    6.403101    8.732589          1         50
+particip~e_d |        123    .0406504    .1982867          0          1
+participat~w |          0
+-------------+---------------------------------------------------------
+particip~o_d |        123    .4227642    .4960191          0          1
+selection_op |          0
+ selection_f |        123    3.195122    1.316095          1          5
+p_satisfac~n |        123     2.98374    1.071109          1          5
+  p_people_d |        203    .1428571    .3507922          0          1
+-------------+---------------------------------------------------------
+  p_people_n |         29    5.206897    6.252881          1         30
+  donation_d |        203    .9310345    .2540219          0          1
+donation_org |        189    2.063492    .8789443          1          4
+donation_o~r |         14           2     .877058          1          3
+  donation_n |        203    8682.266     7171.09          0      20000
+-------------+---------------------------------------------------------
+donation_all |         86    .5813953    .4962238          0          1
+donation_tot |        189    21306.88    32218.19       1000     400000
+    income_n |        189    10550.26    7044.793          0      19500
+ tropenbos_d |        203     .044335    .2063471          0          1
+ tropenbos_1 |          0
+-------------+---------------------------------------------------------
+      gaia_d |        203    .1083744    .3116211          0          1
+      gaia_1 |          0
+    omacha_d |        203    .0344828    .1829167          0          1
+    omacha_1 |          0
+donation_ngo |        203     1.37931    .7236907          1          3
+-------------+---------------------------------------------------------
+donation_4~d |         40        .975    .1581139          0          1
+donation_8~d |         76    .4736842    .5026247          0          1
+donation_1~d |         76    .4342105    .4989463          0          1
+regret_for~t |        203    3.807882    .5049624          1          4
+deforestat~n |        203    2.305419    1.105934          1          4
+-------------+---------------------------------------------------------
+     farms_n |        202    1.772277    1.307317          1          9
+  farm1_size |        200     25.3019    64.43729        .12        685
+  farm1_unit |        202    1.727723     .951628          1          3
+  farm2_size |         76    22.27145    48.89817        .06        345
+  farm2_unit |         74    1.891892    .9871443          1          3
+-------------+---------------------------------------------------------
+  farm3_size |         38    13.07042    20.57924        .04       81.5
+  farm3_unit |         39    1.820513    .9423318          1          3
+  farm4_size |         20      12.838    17.90636         .5       73.6
+  farm4_unit |         20        1.85    .9880869          1          3
+ cut_trees_d |        111    .0810811    .2741975          0          1
+-------------+---------------------------------------------------------
+ cut_trees_n |          4        5.25    3.947573          2         10
+ cut_trees_u |          0
+  enjoy_care |        203     3.82266    .4428517          1          4
+    polspace |        203    3.103448    1.002046          1          4
+   residence |        203    3.029557    1.085053          1          4
+-------------+---------------------------------------------------------
+   neighbors |        203    3.359606    .9406885          1          4
+econ_activ~y |        203    3.133005    1.989339          1          6
+econ_activ~6 |          0
+ econ_depend |        203     2.46798    1.925007          0         13
+control_pu~w |        203    3.453202    .7322332          1          4
+-------------+---------------------------------------------------------
+      id_age |        203    58.24138     13.8584          0         88
+      id_sex |        203    .2807882    .4504952          0          1
+proud_forest |        203    3.896552    .3777709          1          4
+id_educ_ho~d |        203     7.08867    2.880804          1         11
+     id_educ |        203    5.073892    3.081317          1         11
+-------------+---------------------------------------------------------
+ care_forest |        203    1.349754    .6531246          1          4
+  civicorg_d |        203    .2364532    .4259541          0          1
+    civicorg |          0
+  civicorg_y |         48    1877.563    486.7358          5       2018
+civicorg_p~t |         48    3.333333    1.078481          1          4
+-------------+---------------------------------------------------------
+pruductive~d |        203    .2413793    .4289777          0          1
+pruductive~g |          0
+pruductive~y |         49    2007.163    12.37495       1958       2018
+pruductive~t |         32     3.03125    1.121185          1          4
+guilt_forest |        203    3.758621      .57666          1          4
+-------------+---------------------------------------------------------
+neighbors_~c |        203    3.305419    .9927062          1          4
+household_~e |        199     1934922     3014523          0   2.00e+07
+responsibi~v |        203    3.384236    .9011257          1          4
+activity_i~e |          0
+ fine_forest |        203    1.778325    1.096856          1          4
+-------------+---------------------------------------------------------
+noprotect_~t |        203    1.093596    .3803443          1          4
+trust_people |        203    2.541872    1.294302          1          5
+trust_town~e |        203    3.049261    1.352496          1          5
+trust_fami~y |        203    3.576355    1.420442          1          5
+community_~v |        203    2.862069    1.821405          1          5
+-------------+---------------------------------------------------------
+community_~1 |         77    1.064935    .2963667          0          2
+community_~2 |         44    1.113636    .3210382          1          2
+community_~3 |         10           1           0          1          1
+know_nonpart |        203    .1231527    .3294248          0          1
+ know_prog_d |         85    .4823529     .502654          0          1
+-------------+---------------------------------------------------------
+   know_prog |          0
+apply_prog_d |         85    .1529412    .3620669          0          1
+prog_selec~n |          0
+noapply_prog |         72    1.472222    1.310545          1          7
+noapply_pr~1 |         72    .8333333    .3752933          0          1
+-------------+---------------------------------------------------------
+noapply_pr~2 |         72    .0694444    .2559923          0          1
+noapply_pr~3 |         72    .0555556    .2306689          0          1
+noapply_pr~4 |         72    .0138889    .1178511          0          1
+noapply_pr~5 |         72           0           0          0          0
+noapply_pr~6 |         72           0           0          0          0
+-------------+---------------------------------------------------------
+noapply_pr~7 |         72    .0416667    .2012286          0          1
+ participant |        203    .6059113    .4898621          0          1
+      phase1 |        203    .2758621    .4480526          0          1
+      phase2 |        203    .3300493     .471393          0          1
+pes_partic~n |        203    1.935961    .8506476          1          3
+-------------+---------------------------------------------------------
+     group_1 |        203    .3940887    .4898621          0          1
+     group_2 |        203    .2758621    .4480526          0          1
+     group_3 |        203    .3300493     .471393          0          1
+      primed |        123    .4878049    .5018956          0          1
+primed_gro~2 |        123    .2113821    .4099587          0          1
+-------------+---------------------------------------------------------
+primed_gro~3 |        123    .2764228    .4490575          0          1
+   land_size |        200    37.53223    91.82581        .12       1046
+      female |        203    .2807882    .4504952          0          1
+ max_primary |        203    .4581281    .4994754          0          1
+collective~n |        203     1.82266    .9482025          1          5
+-------------+---------------------------------------------------------
+never_coll~e |        203    .4630542    .4998659          0          1
+phase1primed |        123    .2113821    .4099587          0          1
+phase2primed |        123    .2764228    .4490575          0          1
+  agricultor |        203    .3251232    .4695789          0          1
+   cattlemen |        203    .1724138    .3786735          0          1
+-------------+---------------------------------------------------------
+    merchant |        203    .0591133    .2364197          0          1
+    employee |        203     .182266     .387018          0          1
+     laborer |        203    .0098522    .0990123          0          1
+otherecona~y |        203    .2512315    .4347936          0          1
+housholdno~n |        203    .0049261    .0701862          0          1
+-------------+---------------------------------------------------------
+housholdin~m |        203     .044335    .2063471          0          1
+housholdco~m |        203      .08867    .2849695          0          1
+housholdin.. |        203    .0541872    .2269464          0          1
+housholdco.. |        203    .2364532    .4259541          0          1
+housholdin.. |        203    .0049261    .0701862          0          1
+-------------+---------------------------------------------------------
+housholdco.. |        203    .0492611    .2169477          0          1
+housholdin~f |        203      .08867    .2849695          0          1
+housholdco~f |        203     .226601    .4196672          0          1
+housholdin~d |        203    .0147783    .1209628          0          1
+housholdco~d |        203    .1871921      .39103          0          1
+-------------+---------------------------------------------------------
+ noeducation |        203    .0049261    .0701862          0          1
+incomplete~m |        203    .2413793    .4289777          0          1
+completeprim |        203    .2118227      .40961          0          1
+incomple~sec |        203    .1133005    .3177433          0          1
+ completesec |        203    .0837438    .2776881          0          1
+-------------+---------------------------------------------------------
+incomple~tec |        203    .0147783    .1209628          0          1
+ completetec |        203      .08867    .2849695          0          1
+incomplete~f |        203    .0147783    .1209628          0          1
+completeprof |        203    .1182266    .3236745          0          1
+incomplete~d |        203    .0049261    .0701862          0          1
+-------------+---------------------------------------------------------
+completegrad |        203    .1034483    .3052964          0          1
+    donnever |        203    .7635468    .4259541          0          1
+     dononce |        203    .0935961     .291986          0          1
+     donmany |        203    .1428571    .3507922          0          1
+    knowsNGO |        203    .1625616    .3698773          0          1
+-------------+---------------------------------------------------------
+donatedbef~e |        203    .2364532    .4259541          0          1
+select~tfair |        203    .0935961     .291986          0          1
+selec~ryfair |        203    .0935961     .291986          0          1
+selectionf~r |        203    .1182266    .3236745          0          1
+selectiont~r |        203    .2019704    .4024628          0          1
+-------------+---------------------------------------------------------
+ selectionna |        203    .0985222    .2987561          0          1
+satisfacti~l |        203    .0738916    .2622412          0          1
+satisfacti~t |        203    .1182266    .3236745          0          1
+satisfacti~s |        203    .1674877    .3743339          0          1
+satisfacti~y |        203    .2364532    .4259541          0          1
+-------------+---------------------------------------------------------
+satisfacti~a |        203    .0098522    .0990123          0          1
+   satisfied |        203    .4039409     .491899          0          1
+fairselect~n |        203     .320197    .4677055          0          1
+   TropenBos |        203    .2610837    .4403113          0          1
+        Gaia |        203    .4187192    .4945689          0          1
+-------------+---------------------------------------------------------
+      Omacha |        203     .182266     .387018          0          1
+         Any |        203    .0689655    .2540219          0          1
+basiceduca~n |        203    .6551724    .4764871          0          1
+higheducat~n |        203    .3448276    .4764871          0          1
+higheducat~d |        123     .195122    .3979154          0          1
+-------------+---------------------------------------------------------
+basiceduct~d |        123    .2926829     .456855          0          1
+income_hh_~p |        199    1463.455    2279.999          0   15126.76
+    high_SES |        203    .5172414     .500938          0          1
+amount_per~t |        120     2233918     3378943      70000   2.00e+07
+amount_per~p |        120    1689.598    2555.623   52.94367   15126.76
+-------------+---------------------------------------------------------
+residence_~m |        203    .6009852    .4909064          0          1
+donation_p~t |        203    43.41133    35.85545          0        100
+
+. sum $motivations
+variable motivation1 not found
+r(111);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. alpha guilt_forest enjoy_care regret_forest proud_forest,  gen(motivation1) // alpha=0.72
+
+Test scale = mean(unstandardized items)
+
+Average interitem covariance:     .0917102
+Number of items in the scale:            4
+Scale reliability coefficient:      0.7240
+
+. alpha guilt_forest neighbors_critic neighbors, gen(motivation2)   // alpha=0.57
+
+Test scale = mean(unstandardized items)
+
+Average interitem covariance:      .224902
+Number of items in the scale:            3
+Scale reliability coefficient:      0.5698
+
+. rename care_forest motivation3
+
+. rename fine_forest motivation4
+
+. rename deforestation motivation5
+
+. rename noprotect_forest motivation6
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global motivations motivation1-motivation5
+
+. 
+end of do-file
+
+. sum $motivations
+variables out of order
+r(111);
+
+. tab $motivations
+variables out of order
+r(111);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global motivations motivation1 motivation2 motivation3 motivation4 motivation5 motivation6
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. reg donation_n group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        203
+                                                F(8, 194)         =       4.25
+                                                Prob > F          =     0.0001
+                                                R-squared         =     0.1507
+                                                Root MSE          =     6743.8
+
+------------------------------------------------------------------------------
+             |             Robust HC3
+  donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     group_2 |   1484.172   1121.001     1.32   0.187    -726.7428    3695.086
+     group_3 |   3222.964   1263.034     2.55   0.011     731.9228    5714.005
+ motivation1 |    929.331   2437.319     0.38   0.703    -3877.715    5736.377
+ motivation2 |  -1892.751    1151.45    -1.64   0.102    -4163.719    378.2172
+ motivation3 |  -583.1359   820.8917    -0.71   0.478    -2202.154    1035.882
+ motivation4 |  -814.5644   448.3215    -1.82   0.071    -1698.774    69.64558
+ motivation5 |   -900.325   437.2685    -2.06   0.041    -1762.735   -37.91442
+ motivation6 |  -1416.472   1200.112    -1.18   0.239    -3783.414    950.4695
+       _cons |   16094.51   8685.358     1.85   0.065     -1035.34    33224.36
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size residence_farm
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. reg donation_n group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(27, 170)        =       6.05
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3904
+                                                Root MSE          =     5934.8
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   436.2138   1131.085     0.39   0.700    -1796.567    2668.995
+         group_3 |   3174.708    1237.69     2.57   0.011     731.4873    5617.929
+     motivation1 |   1498.321   2592.733     0.58   0.564    -3619.776    6616.419
+     motivation2 |  -2315.899   1138.262    -2.03   0.043    -4562.847   -68.95046
+     motivation3 |  -883.3957   826.1367    -1.07   0.286    -2514.203     747.412
+     motivation4 |  -51.19829   445.6292    -0.11   0.909    -930.8777    828.4812
+     motivation5 |  -156.3132   467.5506    -0.33   0.739    -1079.266    766.6395
+     motivation6 |    21.9319   1379.761     0.02   0.987    -2701.739    2745.603
+          female |   184.5966   1328.658     0.14   0.890    -2438.196    2807.389
+          id_age |  -65.34557   36.44659    -1.79   0.075    -137.2917    6.600598
+     max_primary |    -141.75    1267.25    -0.11   0.911    -2643.322    2359.822
+   income_hh_ppp |   1.288826   .2784782     4.63   0.000     .7391053    1.838547
+         farms_n |  -31.75506   471.6022    -0.07   0.946    -962.7057    899.1956
+       land_size |   9.671611   4.837911     2.00   0.047     .1214933    19.22173
+  residence_farm |   355.0285   1169.775     0.30   0.762    -1954.126    2664.183
+    trust_people |   228.7366   537.6988     0.43   0.671    -832.6899    1290.163
+trust_townpeople |  -2.098636   519.4902    -0.00   0.997    -1027.581    1023.384
+   trust_familiy |  -208.7325   350.2455    -0.60   0.552    -900.1229    482.6579
+      civicorg_d |  -2443.531   1183.291    -2.07   0.040    -4779.367   -107.6947
+ pruductiveorg_d |   1423.526   1277.081     1.11   0.267    -1097.454    3944.505
+        polspace |   832.9966   513.6882     1.62   0.107    -181.0325    1847.026
+never_collective |   696.3106   1205.293     0.58   0.564    -1682.957    3075.579
+     tropenbos_d |   2670.173   2002.083     1.33   0.184    -1281.972    6622.319
+          gaia_d |   1660.307    1529.84     1.09   0.279    -1359.622    4680.236
+        omacha_d |   2811.165   2434.712     1.15   0.250    -1994.998    7617.328
+         dononce |  -258.7623    1636.18    -0.16   0.875    -3488.609    2971.084
+         donmany |   252.6649   1626.737     0.16   0.877    -2958.542    3463.871
+           _cons |   9826.921   9049.116     1.09   0.279    -8036.185    27690.03
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. tab pes_participation
+
+pes_participati |
+             on |      Freq.     Percent        Cum.
+----------------+-----------------------------------
+Non-participant |         80       39.41       39.41
+   Phase 1 only |         56       27.59       67.00
+    Phase 1 & 2 |         67       33.00      100.00
+----------------+-----------------------------------
+          Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global motivations motivation1 motivation2 motivation3 motivation4 motivation5 motivation6
+
+. reg donation_n group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(27, 170)        =       6.05
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3904
+                                                Root MSE          =     5934.8
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   436.2138   1131.085     0.39   0.700    -1796.567    2668.995
+         group_3 |   3174.708    1237.69     2.57   0.011     731.4873    5617.929
+     motivation1 |   1498.321   2592.733     0.58   0.564    -3619.776    6616.419
+     motivation2 |  -2315.899   1138.262    -2.03   0.043    -4562.847   -68.95046
+     motivation3 |  -883.3957   826.1367    -1.07   0.286    -2514.203     747.412
+     motivation4 |  -51.19829   445.6292    -0.11   0.909    -930.8777    828.4812
+     motivation5 |  -156.3132   467.5506    -0.33   0.739    -1079.266    766.6395
+     motivation6 |    21.9319   1379.761     0.02   0.987    -2701.739    2745.603
+          female |   184.5966   1328.658     0.14   0.890    -2438.196    2807.389
+          id_age |  -65.34557   36.44659    -1.79   0.075    -137.2917    6.600598
+     max_primary |    -141.75    1267.25    -0.11   0.911    -2643.322    2359.822
+   income_hh_ppp |   1.288826   .2784782     4.63   0.000     .7391053    1.838547
+         farms_n |  -31.75506   471.6022    -0.07   0.946    -962.7057    899.1956
+       land_size |   9.671611   4.837911     2.00   0.047     .1214933    19.22173
+  residence_farm |   355.0285   1169.775     0.30   0.762    -1954.126    2664.183
+    trust_people |   228.7366   537.6988     0.43   0.671    -832.6899    1290.163
+trust_townpeople |  -2.098636   519.4902    -0.00   0.997    -1027.581    1023.384
+   trust_familiy |  -208.7325   350.2455    -0.60   0.552    -900.1229    482.6579
+      civicorg_d |  -2443.531   1183.291    -2.07   0.040    -4779.367   -107.6947
+ pruductiveorg_d |   1423.526   1277.081     1.11   0.267    -1097.454    3944.505
+        polspace |   832.9966   513.6882     1.62   0.107    -181.0325    1847.026
+never_collective |   696.3106   1205.293     0.58   0.564    -1682.957    3075.579
+     tropenbos_d |   2670.173   2002.083     1.33   0.184    -1281.972    6622.319
+          gaia_d |   1660.307    1529.84     1.09   0.279    -1359.622    4680.236
+        omacha_d |   2811.165   2434.712     1.15   0.250    -1994.998    7617.328
+         dononce |  -258.7623    1636.18    -0.16   0.875    -3488.609    2971.084
+         donmany |   252.6649   1626.737     0.16   0.877    -2958.542    3463.871
+           _cons |   9826.921   9049.116     1.09   0.279    -8036.185    27690.03
+----------------------------------------------------------------------------------
+
+. est store motivate_donate1
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,   170) =    1.27
+            Prob > F =    0.2754
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) ("Adjusted R-
+> squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) replace
+invalid 'e' 
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. ** What can explain variation in donations: Relation of motivations with the donations
+. global motivations motivation1 motivation2 motivation3 motivation4 motivation5 motivation6
+
+. reg donation_n group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(27, 170)        =       6.05
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3904
+                                                Root MSE          =     5934.8
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   436.2138   1131.085     0.39   0.700    -1796.567    2668.995
+         group_3 |   3174.708    1237.69     2.57   0.011     731.4873    5617.929
+     motivation1 |   1498.321   2592.733     0.58   0.564    -3619.776    6616.419
+     motivation2 |  -2315.899   1138.262    -2.03   0.043    -4562.847   -68.95046
+     motivation3 |  -883.3957   826.1367    -1.07   0.286    -2514.203     747.412
+     motivation4 |  -51.19829   445.6292    -0.11   0.909    -930.8777    828.4812
+     motivation5 |  -156.3132   467.5506    -0.33   0.739    -1079.266    766.6395
+     motivation6 |    21.9319   1379.761     0.02   0.987    -2701.739    2745.603
+          female |   184.5966   1328.658     0.14   0.890    -2438.196    2807.389
+          id_age |  -65.34557   36.44659    -1.79   0.075    -137.2917    6.600598
+     max_primary |    -141.75    1267.25    -0.11   0.911    -2643.322    2359.822
+   income_hh_ppp |   1.288826   .2784782     4.63   0.000     .7391053    1.838547
+         farms_n |  -31.75506   471.6022    -0.07   0.946    -962.7057    899.1956
+       land_size |   9.671611   4.837911     2.00   0.047     .1214933    19.22173
+  residence_farm |   355.0285   1169.775     0.30   0.762    -1954.126    2664.183
+    trust_people |   228.7366   537.6988     0.43   0.671    -832.6899    1290.163
+trust_townpeople |  -2.098636   519.4902    -0.00   0.997    -1027.581    1023.384
+   trust_familiy |  -208.7325   350.2455    -0.60   0.552    -900.1229    482.6579
+      civicorg_d |  -2443.531   1183.291    -2.07   0.040    -4779.367   -107.6947
+ pruductiveorg_d |   1423.526   1277.081     1.11   0.267    -1097.454    3944.505
+        polspace |   832.9966   513.6882     1.62   0.107    -181.0325    1847.026
+never_collective |   696.3106   1205.293     0.58   0.564    -1682.957    3075.579
+     tropenbos_d |   2670.173   2002.083     1.33   0.184    -1281.972    6622.319
+          gaia_d |   1660.307    1529.84     1.09   0.279    -1359.622    4680.236
+        omacha_d |   2811.165   2434.712     1.15   0.250    -1994.998    7617.328
+         dononce |  -258.7623    1636.18    -0.16   0.875    -3488.609    2971.084
+         donmany |   252.6649   1626.737     0.16   0.877    -2958.542    3463.871
+           _cons |   9826.921   9049.116     1.09   0.279    -8036.185    27690.03
+----------------------------------------------------------------------------------
+
+. est store motivate_donate1
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,   170) =    1.27
+            Prob > F =    0.2754
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) replace
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_n $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==1, vce(hc3)
+
+Linear regression                               Number of obs     =         80
+                                                F(25, 54)         =       2.50
+                                                Prob > F          =     0.0025
+                                                R-squared         =     0.4751
+                                                Root MSE          =     5208.5
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |   4150.904   3343.795     1.24   0.220        -2553    10854.81
+     motivation2 |  -4850.097   1687.972    -2.87   0.006    -8234.277   -1465.917
+     motivation3 |   135.7932   1470.189     0.09   0.927    -2811.758    3083.344
+     motivation4 |   413.3103   823.5058     0.50   0.618    -1237.719     2064.34
+     motivation5 |   -638.246   834.7256    -0.76   0.448     -2311.77    1035.278
+     motivation6 |  -253.3531   1967.047    -0.13   0.898    -4197.045    3690.339
+          female |  -1162.238    2572.04    -0.45   0.653    -6318.868    3994.392
+          id_age |  -39.68208   44.10838    -0.90   0.372    -128.1141    48.74991
+     max_primary |   1240.784   2073.192     0.60   0.552    -2915.716    5397.284
+   income_hh_ppp |   1.494973   .3953266     3.78   0.000     .7023912    2.287555
+         farms_n |    165.799   796.1801     0.21   0.836    -1430.446    1762.044
+       land_size |   37.65318   54.58231     0.69   0.493    -71.77778    147.0841
+  residence_farm |   4878.066   3153.395     1.55   0.128    -1444.111    11200.24
+    trust_people |   -304.073   783.6376    -0.39   0.700    -1875.172    1267.026
+trust_townpeople |  -221.0972    819.961    -0.27   0.788     -1865.02    1422.826
+   trust_familiy |   316.0781   605.5995     0.52   0.604    -898.0758    1530.232
+      civicorg_d |  -2855.367   2323.124    -1.23   0.224    -7512.949    1802.215
+ pruductiveorg_d |   1486.563   2508.013     0.59   0.556    -3541.701    6514.827
+        polspace |   1312.054   1216.347     1.08   0.286    -1126.575    3750.682
+never_collective |   846.2466   1887.156     0.45   0.656    -2937.273    4629.766
+     tropenbos_d |    3837.91   5357.383     0.72   0.477    -6902.997    14578.82
+          gaia_d |   3120.949   3482.557     0.90   0.374    -3861.158    10103.06
+        omacha_d |   -381.918   3793.353    -0.10   0.920    -7987.132    7223.296
+         dononce |   2446.896    2768.04     0.88   0.381     -3102.69    7996.483
+         donmany |  -2518.218   3946.329    -0.64   0.526    -10430.13    5393.695
+           _cons |    111.699   14084.42     0.01   0.994    -28125.86    28349.26
+----------------------------------------------------------------------------------
+
+. est store motivate_donate2
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    54) =    1.43
+            Prob > F =    0.2193
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_n $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==2, vce(hc3)
+
+Linear regression                               Number of obs     =         54
+                                                F(25, 28)         =       3.35
+                                                Prob > F          =     0.0012
+                                                R-squared         =     0.6224
+                                                Root MSE          =     5782.1
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |   2135.031   6857.725     0.31   0.758    -11912.38    16182.44
+     motivation2 |  -2699.054   4368.493    -0.62   0.542    -11647.51    6249.399
+     motivation3 |  -966.4131   5677.026    -0.17   0.866    -12595.27    10662.45
+     motivation4 |  -967.4322   1588.494    -0.61   0.547    -4221.315     2286.45
+     motivation5 |  -671.5958   1463.093    -0.46   0.650    -3668.606    2325.414
+     motivation6 |  -1270.168   9017.314    -0.14   0.889     -19741.3    17200.96
+          female |  -1258.882   4044.888    -0.31   0.758     -9544.46    7026.696
+          id_age |   100.0284   115.7204     0.86   0.395    -137.0142    337.0709
+     max_primary |  -3234.062   2829.501    -1.14   0.263    -9030.033    2561.908
+   income_hh_ppp |   .6104252   1.199473     0.51   0.615    -1.846583    3.067433
+         farms_n |   903.1414   2045.383     0.44   0.662    -3286.636    5092.919
+       land_size |   13.16339   24.74731     0.53   0.599    -37.52919    63.85596
+  residence_farm |   426.0839   2938.797     0.14   0.886    -5593.769    6445.937
+    trust_people |   225.0916   2695.791     0.08   0.934    -5296.987     5747.17
+trust_townpeople |   816.9813   1753.179     0.47   0.645    -2774.242    4408.205
+   trust_familiy |   1365.768   1421.242     0.96   0.345    -1545.513     4277.05
+      civicorg_d |   525.0017   4188.037     0.13   0.901    -8053.803    9103.807
+ pruductiveorg_d |   3692.713   4291.589     0.86   0.397    -5098.209    12483.64
+        polspace |  -774.9855     1600.3    -0.48   0.632    -4053.051    2503.081
+never_collective |   4819.208   3392.228     1.42   0.166    -2129.455    11767.87
+     tropenbos_d |  -4738.663   7856.973    -0.60   0.551    -20832.94    11355.62
+          gaia_d |   124.3976   8081.426     0.02   0.988    -16429.65    16678.45
+        omacha_d |   17696.64   9993.985     1.77   0.087    -2775.112    38168.39
+         dononce |   812.4764   11484.16     0.07   0.944    -22711.75     24336.7
+         donmany |  -185.8028   4037.165    -0.05   0.964    -8455.561    8083.955
+           _cons |  -364.8722   23073.78    -0.02   0.987    -47629.36    46899.62
+----------------------------------------------------------------------------------
+
+. est store motivate_donate3
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    28) =    0.30
+            Prob > F =    0.9331
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_n $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==3, vce(hc3)
+
+Linear regression                               Number of obs     =         64
+                                                F(25, 38)         =       5.75
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.7025
+                                                Root MSE          =       5563
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |  -4828.563   3075.178    -1.57   0.125    -11053.94     1396.81
+     motivation2 |   1634.953   1670.977     0.98   0.334    -1747.764     5017.67
+     motivation3 |  -946.4393    1622.55    -0.58   0.563    -4231.121    2338.242
+     motivation4 |    66.6819   1301.755     0.05   0.959    -2568.584    2701.948
+     motivation5 |   87.52673   1004.627     0.09   0.931    -1946.233    2121.287
+     motivation6 |  -4691.244   6422.741    -0.73   0.470     -17693.4    8310.915
+          female |   5028.298   3418.053     1.47   0.149    -1891.188    11947.78
+          id_age |  -212.3597   89.85326    -2.36   0.023    -394.2581   -30.46127
+     max_primary |   4235.299   3393.843     1.25   0.220    -2635.176    11105.77
+   income_hh_ppp |   2.788183   .8601481     3.24   0.002     1.046904    4.529461
+         farms_n |   93.84925     983.46     0.10   0.924    -1897.061     2084.76
+       land_size |   13.49807   18.79546     0.72   0.477    -24.55135    51.54749
+  residence_farm |  -3335.955   2307.079    -1.45   0.156    -8006.393    1334.483
+    trust_people |   944.3847   991.2927     0.95   0.347    -1062.383    2951.152
+trust_townpeople |   512.3483   1249.923     0.41   0.684    -2017.988    3042.685
+   trust_familiy |  -479.0442   1198.732    -0.40   0.692    -2905.749    1947.661
+      civicorg_d |  -6083.374   3195.888    -1.90   0.065    -12553.11    386.3627
+ pruductiveorg_d |   4969.719   2871.542     1.73   0.092    -843.4142    10782.85
+        polspace |    2262.08   1283.267     1.76   0.086    -335.7591    4859.919
+never_collective |   2636.018   3621.202     0.73   0.471    -4694.721    9966.758
+     tropenbos_d |  -4408.232   16071.07    -0.27   0.785    -36942.41    28125.95
+          gaia_d |   2169.025     3483.9     0.62   0.537    -4883.761    9221.811
+        omacha_d |   1873.675   10789.95     0.17   0.863    -19969.44    23716.79
+         dononce |   268.3368   3334.205     0.08   0.936    -6481.408    7018.082
+         donmany |   3382.507   3202.022     1.06   0.297    -3099.647    9864.662
+           _cons |   24592.74   16724.73     1.47   0.150    -9264.713     58450.2
+----------------------------------------------------------------------------------
+
+. est store motivate_donate4
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    38) =    0.47
+            Prob > F =    0.8245
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep($motivations) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize() legend(off) grid(none)
+>  xscale(range(-0.5 0.5)) xlabels(-.75(0.25).75, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact relative to non-participants",
+>  height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } Regression estimated di
+> fferences", span pos(11) size())
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-.75(0.25).75, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact", heigh
+> t(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(11) size())
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-10000(5000)10000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact", h
+> eight(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(11) size())
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact", h
+> eight(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(11) size())
+
+. 
+end of do-file
+
+. tab pes_participation
+
+pes_participati |
+             on |      Freq.     Percent        Cum.
+----------------+-----------------------------------
+Non-participant |         80       39.41       39.41
+   Phase 1 only |         56       27.59       67.00
+    Phase 1 & 2 |         67       33.00      100.00
+----------------+-----------------------------------
+          Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on 
+> donations (in COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", 
+> span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_a.gph", replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph saved)
+
+.          
+.          
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on 
+> donations (in COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } ", 
+> span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_b.gph", replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_b.gph not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_b.gph saved)
+
+.          
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> scale(1.2)
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3)  drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize() legend(o
+> ff) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on donations
+>  (in COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(
+> 11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. 
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on 
+> donations (in COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", 
+> span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph saved)
+
+.          
+.          
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-0.5 0.5)) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on 
+> donations (in COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } ", 
+> span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_b.gph saved)
+
+.          
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2)
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 2 7.5 `"Social"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 3 12.5 `"Money"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.style.editstyle majorstyle(tickstyle(textstyle(size(5-pt)))) editcopy
+(note:  named style 5-pt not found in class gsize, default attributes used)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 1 2.5 `"Fines"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 2 7.5 `"External LoC"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 3 12.5 `"No point"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.style.editstyle majorstyle(tickstyle(textstyle(size(5-pt)))) editcopy
+(note:  named style 5-pt not found in class gsize, default attributes used)
+
+. gr_edit plotregion1.graph1.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_motivations_donations.gph", replace
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_motivations_donations.gph not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_motivations_donations.gph saved)
+
+. gr export "$working_ANALYSIS/results/figures/figure3_motivations_donations.tif", replace width(4500)
+(note: file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure3_motivations_donations.tif not found)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure3_motivations_donations.tif written in TIFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+.          
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.2)
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 2 7.5 `"Social"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 3 12.5 `"Money"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.style.editstyle majorstyle(tickstyle(textstyle(size(5-pt)))) editcopy
+(note:  named style 5-pt not found in class gsize, default attributes used)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 1 2.5 `"Fines"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 2 7.5 `"External LoC"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 3 12.5 `"No point"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.style.editstyle majorstyle(tickstyle(textstyle(size(5-pt)))) editcopy
+(note:  named style 5-pt not found in class gsize, default attributes used)
+
+. gr_edit plotregion1.graph1.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_motivations_donations.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_motivations_donations.gph saved)
+
+. gr export "$working_ANALYSIS/results/figures/figure3_motivations_donations.tif", replace width(4500)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure3_motivations_donations.tif written in TIFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-15000 15000)) xlabels(-15(5)15, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on donat
+> ions (in '000' COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } ",
+>  span pos(11) size())
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xscale(range(-15000 15000)) xlabels(-1500(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact 
+> on donations (in '000' COP)", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{b
+> f:B } ", span pos(11) size())
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) xtitle("Regression estimated impact on donations (in '000' COP)
+> ", height(7))  mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } ", span pos(11) size(
+> ))
+
+. 
+end of do-file
+
+. help gr combine
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  
+> cond(@pval<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph saved)
+
+.          
+.          
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xlabels(-15000(5000)15000, nogrid labsize()) mlabposition(1) mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  
+> cond(@pval<.10, "{bf:*}", "" )))) title("{bf:B } ", span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_b.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in COP)", height(7))
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in COP)", height(7))
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 2 7.5 `"Social"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 3 12.5 `"Money"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 1 2.5 `"Fines"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 2 7.5 `"External LoC"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 3 12.5 `"No point"', tickset(major)
+
+. gr_edit plotregion1.graph1.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gen donation_1000 = donation_n / 1000
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. global motivations motivation1 motivation2 motivation3 motivation4 motivation5 motivation6
+
+. gen donation_1000 = donation_n / 1000
+variable donation_1000 already defined
+r(110);
+
+end of do-file
+
+r(110);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. reg donation_1000 group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(27, 170)        =       6.05
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3904
+                                                Root MSE          =     5.9348
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+   donation_1000 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   .4362138   1.131085     0.39   0.700    -1.796567    2.668995
+         group_3 |   3.174708    1.23769     2.57   0.011     .7314873    5.617929
+     motivation1 |   1.498321   2.592733     0.58   0.564    -3.619776    6.616419
+     motivation2 |  -2.315899   1.138262    -2.03   0.043    -4.562847   -.0689505
+     motivation3 |  -.8833957   .8261367    -1.07   0.286    -2.514203     .747412
+     motivation4 |  -.0511983   .4456292    -0.11   0.909    -.9308777    .8284812
+     motivation5 |  -.1563132   .4675506    -0.33   0.739    -1.079266    .7666395
+     motivation6 |   .0219319   1.379761     0.02   0.987    -2.701739    2.745603
+          female |   .1845966   1.328658     0.14   0.890    -2.438196    2.807389
+          id_age |  -.0653456   .0364466    -1.79   0.075    -.1372917    .0066006
+     max_primary |    -.14175    1.26725    -0.11   0.911    -2.643322    2.359822
+   income_hh_ppp |   .0012888   .0002785     4.63   0.000     .0007391    .0018385
+         farms_n |  -.0317551   .4716022    -0.07   0.946    -.9627057    .8991956
+       land_size |   .0096716   .0048379     2.00   0.047     .0001215    .0192217
+  residence_farm |   .3550285   1.169775     0.30   0.762    -1.954126    2.664183
+    trust_people |   .2287366   .5376988     0.43   0.671    -.8326899    1.290163
+trust_townpeople |  -.0020986   .5194902    -0.00   0.997    -1.027581    1.023384
+   trust_familiy |  -.2087325   .3502455    -0.60   0.552    -.9001229    .4826579
+      civicorg_d |  -2.443531   1.183291    -2.07   0.040    -4.779367   -.1076947
+ pruductiveorg_d |   1.423526   1.277081     1.11   0.267    -1.097454    3.944505
+        polspace |   .8329966   .5136882     1.62   0.107    -.1810325    1.847026
+never_collective |   .6963106   1.205293     0.58   0.564    -1.682957    3.075579
+     tropenbos_d |   2.670173   2.002083     1.33   0.184    -1.281972    6.622319
+          gaia_d |   1.660307    1.52984     1.09   0.279    -1.359622    4.680236
+        omacha_d |   2.811165   2.434712     1.15   0.250    -1.994998    7.617328
+         dononce |  -.2587623    1.63618    -0.16   0.875    -3.488609    2.971084
+         donmany |   .2526649   1.626737     0.16   0.877    -2.958542    3.463871
+           _cons |   9.826921   9.049116     1.09   0.279    -8.036185    27.69003
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. reg donation_1000 group_2 group_3 $motivations $socio_economic $trust_involvement $ngo_experience, vce(hc3)
+
+Linear regression                               Number of obs     =        198
+                                                F(27, 170)        =       6.05
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3904
+                                                Root MSE          =     5.9348
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+   donation_1000 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   .4362138   1.131085     0.39   0.700    -1.796567    2.668995
+         group_3 |   3.174708    1.23769     2.57   0.011     .7314873    5.617929
+     motivation1 |   1.498321   2.592733     0.58   0.564    -3.619776    6.616419
+     motivation2 |  -2.315899   1.138262    -2.03   0.043    -4.562847   -.0689505
+     motivation3 |  -.8833957   .8261367    -1.07   0.286    -2.514203     .747412
+     motivation4 |  -.0511983   .4456292    -0.11   0.909    -.9308777    .8284812
+     motivation5 |  -.1563132   .4675506    -0.33   0.739    -1.079266    .7666395
+     motivation6 |   .0219319   1.379761     0.02   0.987    -2.701739    2.745603
+          female |   .1845966   1.328658     0.14   0.890    -2.438196    2.807389
+          id_age |  -.0653456   .0364466    -1.79   0.075    -.1372917    .0066006
+     max_primary |    -.14175    1.26725    -0.11   0.911    -2.643322    2.359822
+   income_hh_ppp |   .0012888   .0002785     4.63   0.000     .0007391    .0018385
+         farms_n |  -.0317551   .4716022    -0.07   0.946    -.9627057    .8991956
+       land_size |   .0096716   .0048379     2.00   0.047     .0001215    .0192217
+  residence_farm |   .3550285   1.169775     0.30   0.762    -1.954126    2.664183
+    trust_people |   .2287366   .5376988     0.43   0.671    -.8326899    1.290163
+trust_townpeople |  -.0020986   .5194902    -0.00   0.997    -1.027581    1.023384
+   trust_familiy |  -.2087325   .3502455    -0.60   0.552    -.9001229    .4826579
+      civicorg_d |  -2.443531   1.183291    -2.07   0.040    -4.779367   -.1076947
+ pruductiveorg_d |   1.423526   1.277081     1.11   0.267    -1.097454    3.944505
+        polspace |   .8329966   .5136882     1.62   0.107    -.1810325    1.847026
+never_collective |   .6963106   1.205293     0.58   0.564    -1.682957    3.075579
+     tropenbos_d |   2.670173   2.002083     1.33   0.184    -1.281972    6.622319
+          gaia_d |   1.660307    1.52984     1.09   0.279    -1.359622    4.680236
+        omacha_d |   2.811165   2.434712     1.15   0.250    -1.994998    7.617328
+         dononce |  -.2587623    1.63618    -0.16   0.875    -3.488609    2.971084
+         donmany |   .2526649   1.626737     0.16   0.877    -2.958542    3.463871
+           _cons |   9.826921   9.049116     1.09   0.279    -8.036185    27.69003
+----------------------------------------------------------------------------------
+
+. est store motivate_donate1
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,   170) =    1.27
+            Prob > F =    0.2754
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) replace
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_1000 $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==1, vce(hc3)
+
+Linear regression                               Number of obs     =         80
+                                                F(25, 54)         =       2.50
+                                                Prob > F          =     0.0025
+                                                R-squared         =     0.4751
+                                                Root MSE          =     5.2085
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+   donation_1000 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |   4.150904   3.343795     1.24   0.220       -2.553    10.85481
+     motivation2 |  -4.850097   1.687972    -2.87   0.006    -8.234277   -1.465917
+     motivation3 |   .1357932   1.470189     0.09   0.927    -2.811758    3.083344
+     motivation4 |   .4133103   .8235058     0.50   0.618    -1.237719     2.06434
+     motivation5 |   -.638246   .8347256    -0.76   0.448     -2.31177    1.035278
+     motivation6 |  -.2533531   1.967047    -0.13   0.898    -4.197045    3.690339
+          female |  -1.162238    2.57204    -0.45   0.653    -6.318868    3.994392
+          id_age |  -.0396821   .0441084    -0.90   0.372    -.1281141    .0487499
+     max_primary |   1.240784   2.073192     0.60   0.552    -2.915716    5.397284
+   income_hh_ppp |    .001495   .0003953     3.78   0.000     .0007024    .0022876
+         farms_n |    .165799   .7961801     0.21   0.836    -1.430446    1.762044
+       land_size |   .0376532   .0545823     0.69   0.493    -.0717778    .1470841
+  residence_farm |   4.878066   3.153395     1.55   0.128    -1.444111    11.20024
+    trust_people |   -.304073   .7836376    -0.39   0.700    -1.875172    1.267026
+trust_townpeople |  -.2210972    .819961    -0.27   0.788     -1.86502    1.422826
+   trust_familiy |   .3160781   .6055995     0.52   0.604    -.8980758    1.530232
+      civicorg_d |  -2.855367   2.323124    -1.23   0.224    -7.512949    1.802215
+ pruductiveorg_d |   1.486563   2.508013     0.59   0.556    -3.541701    6.514827
+        polspace |   1.312054   1.216347     1.08   0.286    -1.126575    3.750682
+never_collective |   .8462466   1.887156     0.45   0.656    -2.937273    4.629766
+     tropenbos_d |    3.83791   5.357383     0.72   0.477    -6.902997    14.57882
+          gaia_d |   3.120949   3.482557     0.90   0.374    -3.861158    10.10306
+        omacha_d |   -.381918   3.793353    -0.10   0.920    -7.987132    7.223296
+         dononce |   2.446896    2.76804     0.88   0.381     -3.10269    7.996483
+         donmany |  -2.518218   3.946329    -0.64   0.526    -10.43013    5.393695
+           _cons |    .111699   14.08442     0.01   0.994    -28.12586    28.34926
+----------------------------------------------------------------------------------
+
+. est store motivate_donate2
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    54) =    1.43
+            Prob > F =    0.2193
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_1000 $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==2, vce(hc3)
+
+Linear regression                               Number of obs     =         54
+                                                F(25, 28)         =       3.35
+                                                Prob > F          =     0.0012
+                                                R-squared         =     0.6224
+                                                Root MSE          =     5.7821
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+   donation_1000 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |   2.135031   6.857725     0.31   0.758    -11.91238    16.18244
+     motivation2 |  -2.699054   4.368493    -0.62   0.542    -11.64751    6.249399
+     motivation3 |  -.9664131   5.677026    -0.17   0.866    -12.59527    10.66245
+     motivation4 |  -.9674322   1.588494    -0.61   0.547    -4.221315     2.28645
+     motivation5 |  -.6715958   1.463093    -0.46   0.650    -3.668606    2.325414
+     motivation6 |  -1.270168   9.017314    -0.14   0.889     -19.7413    17.20096
+          female |  -1.258882   4.044888    -0.31   0.758     -9.54446    7.026696
+          id_age |   .1000284   .1157204     0.86   0.395    -.1370142    .3370709
+     max_primary |  -3.234062   2.829501    -1.14   0.263    -9.030033    2.561908
+   income_hh_ppp |   .0006104   .0011995     0.51   0.615    -.0018466    .0030674
+         farms_n |   .9031414   2.045383     0.44   0.662    -3.286636    5.092919
+       land_size |   .0131634   .0247473     0.53   0.599    -.0375292     .063856
+  residence_farm |   .4260839   2.938797     0.14   0.886    -5.593769    6.445937
+    trust_people |   .2250916   2.695791     0.08   0.934    -5.296987     5.74717
+trust_townpeople |   .8169813   1.753179     0.47   0.645    -2.774242    4.408205
+   trust_familiy |   1.365768   1.421242     0.96   0.345    -1.545513     4.27705
+      civicorg_d |   .5250017   4.188037     0.13   0.901    -8.053803    9.103807
+ pruductiveorg_d |   3.692713   4.291589     0.86   0.397    -5.098209    12.48364
+        polspace |  -.7749855     1.6003    -0.48   0.632    -4.053051    2.503081
+never_collective |   4.819208   3.392228     1.42   0.166    -2.129455    11.76787
+     tropenbos_d |  -4.738663   7.856973    -0.60   0.551    -20.83294    11.35562
+          gaia_d |   .1243976   8.081426     0.02   0.988    -16.42965    16.67845
+        omacha_d |   17.69664   9.993985     1.77   0.087    -2.775112    38.16839
+         dononce |   .8124764   11.48416     0.07   0.944    -22.71175     24.3367
+         donmany |  -.1858028   4.037165    -0.05   0.964    -8.455561    8.083955
+           _cons |  -.3648722   23.07378    -0.02   0.987    -47.62936    46.89962
+----------------------------------------------------------------------------------
+
+. est store motivate_donate3
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    28) =    0.30
+            Prob > F =    0.9331
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. reg donation_1000 $motivations $socio_economic $trust_involvement $ngo_experience if pes_participation==3, vce(hc3)
+
+Linear regression                               Number of obs     =         64
+                                                F(25, 38)         =       5.75
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.7025
+                                                Root MSE          =      5.563
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+   donation_1000 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+     motivation1 |  -4.828563   3.075178    -1.57   0.125    -11.05394     1.39681
+     motivation2 |   1.634953   1.670977     0.98   0.334    -1.747764     5.01767
+     motivation3 |  -.9464393    1.62255    -0.58   0.563    -4.231121    2.338242
+     motivation4 |   .0666819   1.301755     0.05   0.959    -2.568584    2.701948
+     motivation5 |   .0875267   1.004627     0.09   0.931    -1.946233    2.121287
+     motivation6 |  -4.691244   6.422741    -0.73   0.470     -17.6934    8.310915
+          female |   5.028298   3.418053     1.47   0.149    -1.891188    11.94778
+          id_age |  -.2123597   .0898533    -2.36   0.023    -.3942581   -.0304613
+     max_primary |   4.235299   3.393843     1.25   0.220    -2.635176    11.10577
+   income_hh_ppp |   .0027882   .0008601     3.24   0.002     .0010469    .0045295
+         farms_n |   .0938492     .98346     0.10   0.924    -1.897061     2.08476
+       land_size |   .0134981   .0187955     0.72   0.477    -.0245513    .0515475
+  residence_farm |  -3.335955   2.307079    -1.45   0.156    -8.006393    1.334483
+    trust_people |   .9443847   .9912927     0.95   0.347    -1.062383    2.951152
+trust_townpeople |   .5123483   1.249923     0.41   0.684    -2.017988    3.042685
+   trust_familiy |  -.4790442   1.198732    -0.40   0.692    -2.905749    1.947661
+      civicorg_d |  -6.083374   3.195888    -1.90   0.065    -12.55311    .3863627
+ pruductiveorg_d |   4.969719   2.871542     1.73   0.092    -.8434142    10.78285
+        polspace |    2.26208   1.283267     1.76   0.086    -.3357591    4.859919
+never_collective |   2.636018   3.621202     0.73   0.471    -4.694721    9.966758
+     tropenbos_d |  -4.408232   16.07107    -0.27   0.785    -36.94241    28.12595
+          gaia_d |   2.169025     3.4839     0.62   0.537    -4.883761    9.221811
+        omacha_d |   1.873675   10.78995     0.17   0.863    -19.96944    23.71679
+         dononce |   .2683368   3.334205     0.08   0.936    -6.481408    7.018082
+         donmany |   3.382507   3.202022     1.06   0.297    -3.099647    9.864662
+           _cons |   24.59274   16.72473     1.47   0.150    -9.264713     58.4502
+----------------------------------------------------------------------------------
+
+. est store motivate_donate4
+
+. testparm $motivations
+
+ ( 1)  motivation1 = 0
+ ( 2)  motivation2 = 0
+ ( 3)  motivation3 = 0
+ ( 4)  motivation4 = 0
+ ( 5)  motivation5 = 0
+ ( 6)  motivation6 = 0
+
+       F(  6,    38) =    0.47
+            Prob > F =    0.8245
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/Table4_motivations_donation", drop($socio_economic $trust_involvement $ngo_experience) addstat("Adju
+> sted R-squared", e(r2_a), "Motivations", `F1') adec(3) word ctitle("Donation Amount") dec(2) append
+C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/tables/Table4_motivations_donation.rtf
+dir : seeout
+
+. 
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation1 motivation2 motivation3) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xlabels(-15(5)15, nogrid labsize()) mlabposition(1) mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pva
+> l<.10, "{bf:*}", "" )))) title("{bf:A } ", span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_a.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_a.gph saved)
+
+.          
+.          
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) labels(-15(5)15, nogrid labsize())mlabposition(1) mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval<
+> .10, "{bf:*}", "" )))) title("{bf:B } ", span pos(11) size())
+option labels() not allowed
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. coefplot (motivate_donate1, aseq(Full sample) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2) recast(rcap))) ///
+>         (motivate_donate2, aseq(Non-participants) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>     (motivate_donate3, aseq(Phase 1) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap))) ///
+>     (motivate_donate4, aseq(Phase 2) level(95 90) ciopts(lwidth(0.5 1.2) lcolor(*.8 *.2)  recast(rcap)))  ///
+>      , nooffsets coeflabels(, wrap(26)) keep(motivation4 motivation5 motivation6) swapnames drop(_cons) xline(0, lcolor(gs5) lwidth(medium)) msize()
+>  legend(off) grid(none) xlabels(-15(5)15, nogrid labsize())mlabposition(1) mlabel(cond(@pval<.01, "{bf:***}", cond(@pval<.05, "{bf:**}",  cond(@pval
+> <.10, "{bf:*}", "" )))) title("{bf:B } ", span pos(11) size())
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_b.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_b.gph saved)
+
+.          
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in COP)", height(7))
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in 1'000 COP)", height(7))
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in 1'000 COP)")
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in 1'000 COP)")
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit caption.DragBy -.6396588486140706 2.132196162046922
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 2 7.5 `"Social"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 3 12.5 `"Money"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 1 2.5 `"Fines"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 2 7.5 `"External LoC"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 3 12.5 `"No point"', tickset(major)
+
+. gr_edit plotregion1.graph1.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_motivations_donations.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_motivations_donations.gph saved)
+
+. gr export "$working_ANALYSIS/results/figures/figure3_motivations_donations.tif", replace width(4500)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure3_motivations_donations.tif written in TIFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr_edit caption.DragBy 2.55863539445629 68.65671641791043
+
+. gr_edit caption.DragBy -.6396588486140706 2.132196162046922
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD467c_000000.tmp"
+
+. gr combine "$working_ANALYSIS/results/intermediate/figure3_a.gph" "$working_ANALYSIS/results/intermediate/figure3_b.gph", rows(1) xsize(4) ysize(2) 
+> iscale(1.1) caption("Regression estimated impact on donations (in 1'000 COP)")
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit caption.DragBy 2.55863539445629 68.65671641791043
+
+. gr_edit caption.DragBy -.6396588486140706 2.132196162046922
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 1 2.5 `"Internal"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 2 7.5 `"Social"', tickset(major)
+
+. gr_edit plotregion1.graph1.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph1.yaxis2.edit_tick 3 12.5 `"Money"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 1 2.5 `"Fines"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 2 7.5 `"External LoC"', tickset(major)
+
+. gr_edit plotregion1.graph2.yaxis2.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.yaxis2.edit_tick 3 12.5 `"No point"', tickset(major)
+
+. gr_edit plotregion1.graph1.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr save  "$working_ANALYSIS/results/intermediate/figure3_motivations_donations.gph", replace
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figure3_motivations_donations.gph saved)
+
+. gr export "$working_ANALYSIS/results/figures/figure3_motivations_donations.tif", replace width(4500)
+(file C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figure3_motivations_donations.tif written in TIFF format)
+
+. 
+end of do-file
+
+. exit, clear

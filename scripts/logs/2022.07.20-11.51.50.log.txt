@@ -1,0 +1,2152 @@
+----------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\istei\OneDrive\Promotion\1_Projects\PES_Colombia\analysis/scripts/logs/2022.07.20-11.51.50.log.txt
+  log type:  text
+ opened on:  20 Jul 2022, 11:51:50
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time: 20 Jul 2022 11:51:50
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "C:\Users\istei\OneDrive\Promotion\1_Projects\PES_Colombia\analysis/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmatapath;lmat
+> apostest;lmatapss;lmatasem;lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensity and "xx
+>  yy zz%50" reduces transparency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" ///
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" ///
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all other text
+. 
+. }
+
+. * -------------------------------------------------
+. 
+. 
+. *--------------------------------------------------
+. * Run processing and analysis scripts
+. *--------------------------------------------------
+. //TODO: update with finale cleaning / analysis files
+. do "$working_ANALYSIS/scripts/01_clean_generate.do"
+
+. *--------------------------------------------------------------------------------------
+. * SCRIPT: 01_clean_generate.do
+. * PURPOSE: cleans the raw excel data and generates additional variables for analysis
+. *--------------------------------------------------------------------------------------
+. 
+. *----------------------------
+. * 1) Import excel dataset and cleaning
+. *----------------------------
+. clear
+
+. import excel  "$working_ANALYSIS/data/psa_data.xlsx", firstrow
+(106 vars, 203 obs)
+
+. 
+. *Correcting data entry errors with help of colombian team
+. replace farms_n =. if id==96
+(1 real change made, 1 to missing)
+
+. replace farm1_size =. if id==10 
+(1 real change made, 1 to missing)
+
+. replace farm1_size =. if id==235
+(1 real change made, 1 to missing)
+
+. replace farm2_unit =1 if id==221
+(1 real change made)
+
+. replace payment_n =. if id==15
+(1 real change made, 1 to missing)
+
+. replace donation_n = 0 if donation_n==.
+(14 real changes made)
+
+. replace income_n = 18000 if id==172
+(1 real change made)
+
+. replace income_n = 18000 if id==411 & donation_n==2000
+(1 real change made)
+
+. replace household_income=. if id==10
+(1 real change made, 1 to missing)
+
+. replace household_income=. if id==96
+(1 real change made, 1 to missing)
+
+. replace household_income=500000 if id==97
+(1 real change made)
+
+. replace household_income=. if id==142
+(1 real change made, 1 to missing)
+
+. replace household_income=. if id==226 & treatment_d==2
+(1 real change made, 1 to missing)
+
+. 
+. 
+. 
+. 
+. *redefine data (adjust unit size)
+. replace farm1_size = farm1_size/10000 if farm1_unit==2
+(5 real changes made)
+
+. replace farm1_size = farm1_size*0.64 if farm1_unit==3
+(71 real changes made)
+
+. replace farm1_size = farm1_size*0.64 if farm1_unit==4
+(0 real changes made)
+
+. replace farm2_size = farm2_size/10000 if farm2_unit==2
+(2 real changes made)
+
+. replace farm2_size = farm2_size*0.64 if farm2_unit==3
+(32 real changes made)
+
+. replace farm2_size = farm2_size*0.64 if farm2_unit==4
+(0 real changes made)
+
+. replace farm2_size =. if farm2_size==0
+(1 real change made, 1 to missing)
+
+. replace farm3_size = farm3_size/10000 if farm3_unit==2
+(4 real changes made)
+
+. replace farm3_size = farm3_size*0.64 if farm3_unit==3
+(14 real changes made)
+
+. replace farm3_size = farm3_size*0.64 if farm3_unit==4
+(0 real changes made)
+
+. replace farm3_size =. if farm3_size==0
+(1 real change made, 1 to missing)
+
+. replace farm4_size = farm4_size/10000 if farm4_unit==2
+(1 real change made)
+
+. replace farm4_size = farm4_size*0.64 if farm4_unit==3
+(8 real changes made)
+
+. replace farm4_size = farm4_size*0.64 if farm4_unit==4
+(0 real changes made)
+
+. 
+. *label variables
+. lab var id "Unique identifier"
+
+. lab var id_name "Participant name"
+
+. lab var assistant "Name of the assistant performing the survey"
+
+. lab var date "Date the survey was taken"
+
+. lab var treatment_d "Treatment participants was assigned to"
+
+. lab def treat_lab 1 "Treatment 1" 2 "Treatment 2" 4 "Control", replace
+
+. lab val treatment_d treat_lab
+
+. lab var phase_d "Which phase of the PES did the participant complete?"
+
+. lab def phase_lab 1 "Phase 1" 2 "Phase 2" 8 "None", replace
+
+. lab val phase_d phase_lab
+
+. lab var panel_d "Panel data on motivations available"
+
+. lab var place_survey "Place where the survey was performed"
+
+. lab var remember_d "remember_d=1 if the participant remembers participating in the PES programme"
+
+. lab var land_mun "Municipality on which the land that participated in the programme is located"
+
+. lab var payment_rem_d "payment_rem=1 if the participan recalls the amount of payments he/she recived"
+
+. lab var payment_n "The number of payments given to the participant during the programme."
+
+. lab var payment_t "Total amount of money payed to the participant during the porgramme"
+
+. lab var payment_u "For what did the participant use the money"
+
+. lab var know_part "know_part=1 if the person knows other people that have participated in the programme"
+note: label truncated to 80 characters
+
+. lab var know_part_n "Number of people that the participan knows that have participated too in the programme"
+note: label truncated to 80 characters
+
+. lab var participate_d "participate_d=1 if the person participated in the programme design or adjustment"
+
+. lab var participate_w "Way of Participation in the programme design/adjustment"
+
+. lab var participate_o_d "participate_o=1 if the person knows that there are other people still receiving the programme benefits."
+note: label truncated to 80 characters
+
+. lab var selection_op "Opinion on the selection of participants of the programme. (open ended)"
+
+. lab var selection_f "Perceived fairness of participant selection process."
+
+. lab def selection_lab 1 "Not fair" 2 "" 3 "" 4 "totally fair" 5 "Don't know", replace
+
+. lab val selection_f selection_lab
+
+. lab var p_satisfaction "Satisfaction with the programme."
+
+. lab def satisfaction_lab 1 "Not satisfied" 2 "" 3 "" 4 "totally satisfied" 5 "Don't know", replace
+
+. lab val p_satisfaction satisfaction_lab
+
+. lab var p_people_d "Knows people currently in the pregramme"
+
+. lab var p_people_n "Number of people known who are currently in the programme."
+
+. lab var donation_d "donation_d=1 if the person wants to do a donation"
+
+. lab var donation_org "Donation Organisation"
+
+. lab def donation_lab 1 "TropenBos" 2 "Gaia" 3 "Omacha" 4 "Random", replace
+
+. lab val donation_org donation_lab
+
+. lab var donation_org_r "Randomly chosen Donation Organisation."
+
+. lab def donation_rdm_lab 1 "TrompenBos" 2 "Gaia" 3 "Omacha", replace
+
+. lab val donation_org_r donation_rdm_lab
+
+. lab var donation_n "Amount donated by the person to the selected organisation"
+
+. lab var donation_tot "Amount the organisation receives as a donation = (donation_n *2)"
+
+. lab var income_n "Amount of money the person keeps after donation."
+
+. lab var tropenbos_d "tropenbos_d=1 if the person knows about TropenBos"
+
+. lab var tropenbos_1 "What does the person knows about TropenBos?"
+
+. lab var gaia_d "gaia_d=1 if the person knows about Gaia"
+
+. lab var gaia_1 "What does the person knows about Gaia?"
+
+. lab var omacha_d "omacha_d=1 if the person knows about Omacha"
+
+. lab var omacha_1 "What does the person knows about Omacha?"
+
+. lab var donation_ngo "Donation to NGO"
+
+. lab def donation_lab 1 "Never" 2 "Once" 3 "Many times", replace
+
+. lab val donation_ngo donation_lab
+
+. lab var donation_all "donation_all=1 if the person donated all th money given to him/her"
+
+. lab var donation_40k_d "donation_40k_d=1 if they would have donated all if given 40000 instead of 20000"
+
+. lab var donation_80k_d "donation_80k_d=1 if they would have donated all if given 80000 instead of 20000"
+
+. lab var donation_100k_d "donation_100k_d=1 if they would have donated all if given 100000 instead of 20000"
+note: label truncated to 80 characters
+
+. lab var regret_forest "Regret if I damage the forest"
+
+. lab def agree_disagree 1 "Totally disagree" 2 "Disagree" 3 "Agree" 4 "Totally agree", replace
+
+. lab val regret_forest agree_disagree
+
+. lab var deforestation "There is very little we can do to reduce deforestation."
+
+. lab val deforestation agree_disagree
+
+. lab var farms_n "Total number of farms owned by the person"
+
+. lab var farm1_size "Size of farm 1"
+
+. lab var farm1_unit "Units of famr1_size"
+
+. lab def unit_lab 1 "ha" 2 "m2" 3 "fanegada" 4 "cuadras" 5 "Don't know", replace
+
+. lab val farm1_unit unit_lab
+
+. lab var farm2_size "Size of farm 2"
+
+. lab var farm2_unit "Units of famr2_size"
+
+. lab val farm2_unit unit_lab
+
+. lab var farm3_size "Size of farm 3"
+
+. lab var farm3_unit "Units of famr3_size"
+
+. lab val farm3_unit unit_lab
+
+. lab var farm4_size "Size of farm 4"
+
+. lab var farm4_unit "Units of famr4_size"
+
+. lab val farm4_unit unit_lab
+
+. lab var cut_trees_d "cut_trees_d=1 if the person  has cut trees or forest after leaving the programme"
+
+. lab var cut_trees_n "amount of trees or ha of forest cut"
+
+. lab var cut_trees_u "Units of cut_trees_n"
+
+. lab var enjoy_care "Joy from taking care of the Forest"
+
+. lab val enjoy_care agree_disagree
+
+. lab var polspace "Political and community participation"
+
+. lab val polspace agree_disagree
+
+. lab var residence "Current Residence of the participant"
+
+. lab def residence_lab 1 "Farm (payments)" 2 "City" 3 "Town" 4 "Other farm(no payments)", replace
+
+. lab val residence residence_lab
+
+. lab var neighbors "The people closest to me would be upset with me if I knock down the forest."
+
+. lab val neighbors agree_disagree
+
+. lab var econ_activity "Main economic activity"
+
+. lab def income_lab 1 "Agriculture" 2 "Cattlemen" 3 "Merchant" 4 "Employee" 5 "Laborer" 6 "Other", replace
+
+. lab val econ_activity income_lab
+
+. lab var econ_activity_6 "Economic activity of the person if econ_activity==6 (Other)"
+
+. lab var econ_depend "Number of persons economically dependent of him/her"
+
+. lab var control_publicw "Control over public workers"
+
+. lab val control_publicw agree_disagree
+
+. lab var id_age "Age of the participant"
+
+. lab var id_sex "id_sex=1 woman"
+
+. lab var proud_forest "I feel proud to take care of the forest."
+
+. lab val proud_forest agree_disagree
+
+. lab var id_educ_household "The highest level of education achieved by the people in the household"
+
+. lab def edu_lab 1 "None" 2 "Incomplete primary" 3 "Complete primary" 4 "Incomplete secondary" 5 "Complete secondary" 6 "Incomplete tec
+> hnical" 7 "Complete technical" 8 "Incomplete professional" 9 "Complete professional" 10 "Incomplete graduate" 11 "Complete graduate", 
+> replace
+
+. lab val id_educ_household edu_lab
+
+. lab var id_educ "The highest level of education achieved by the person"
+
+. lab val id_educ edu_lab
+
+. lab var care_forest "Take care of the forest only if paid."
+
+. lab val care_forest agree_disagree
+
+. lab var civicorg_d "Civic Organisation Participation (Dummy)"
+
+. lab var civicorg "Description of which civic organisation the person participates in"
+
+. lab var civicorg_y "Year since the person has been participating in the civic organisation."
+
+. lab var civicorg_part "Civic Organisation Participation"
+
+. lab def org_lab 1 "very little" 2 "a little" 3 "actively" 4 "very actively", replace
+
+. lab val civicorg_part org_lab
+
+. lab var pruductiveorg_d "Productive Organisation Participation (Dummy)"
+
+. lab var pruductiveorg "Description of which productive organisation the person participates in"
+
+. lab var pruductiveorg_y "Year since the person has been participating in the productive organisation."
+
+. lab var pruductiveorg_part "Productive Organisation Participation"
+
+. lab val pruductiveorg_part org_lab
+
+. lab var guilt_forest "Guilt from damaging the forest"
+
+. lab val guilt_forest agree_disagree
+
+. lab var neighbors_critic "My neighbors would criticize me if I damage the forest."
+
+. lab val neighbors_critic agree_disagree
+
+. lab var household_income "Household monthly income in COP"
+
+. lab var responsibility_gov "I believe that in the long term, citizens are responsible for bad government at national and local levels"
+note: label truncated to 80 characters
+
+. lab val responsibility_gov agree_disagree
+
+. lab var activity_income "Activity that produces the highest income"
+
+. lab var fine_forest "I do not damage the forest for fear of fines that the environmental authority can give me."
+note: label truncated to 80 characters
+
+. lab val fine_forest agree_disagree
+
+. lab var noprotect_forest "There is no point in protecting the forest."
+
+. lab val noprotect_forest agree_disagree
+
+. lab var trust_people "You can trust most people."
+
+. lab def likert5 1 "Strongly disagree" 2 "Disagree" 3 "Neither" 4 "Agree" 5 "Strongly agree", replace
+
+. lab val trust_people likert5
+
+. lab var trust_townpeople "Trust in people from town/neighborhood"
+
+. lab val trust_townpeople likert5
+
+. lab var trust_familiy "Trust people from family only"
+
+. lab val trust_familiy likert5
+
+. lab var community_activ "Participation in Community activities"
+
+. lab def ca_lab 1 "Never" 2 "Everyday" 3 "Once a week" 4 "Once a month" 5 "Couple times a year", replace
+
+. lab val community_activ ca_lab
+
+. lab var community_activ_1 "community_activ_1=1 if the participation mas VOLUNTARY"
+
+. lab var community_activ_2 "community_activ_2=1 if the participation mas VOLUNTARY"
+
+. lab var community_activ_3 "community_activ_3=1 if the participation mas VOLUNTARY"
+
+. lab var id_cedula "Cedula (National ID)"
+
+. lab var know_nonpart "know_nonpart=1 if he/she knows a person with farms/land that have not participated in the program"
+note: label truncated to 80 characters
+
+. lab var know_prog_d "know_prog_d=1 if the person knows the programme"
+
+. lab var know_prog "What does the person knows about the programme (open text)"
+
+. lab var apply_prog_d "apply_prog_d=1 if the person applied to the programme"
+
+. lab var prog_selection "Reason why the person did not get selected into the programme, according to them. (open text)"
+note: label truncated to 80 characters
+
+. lab var noapply_prog "Reason for not applying to the programme"
+
+. lab def reason_lab 1 "Did not know" 2 "Did not meet requirements" 3 "Application process very difficult" 4 "found out too late" 5 "no 
+> trust" 6 "not interestest" 7 "other"
+
+. lab var noapply_prog_1  "Reason for not applying to the programme: the person did not know the programme"
+
+. lab var noapply_prog_2  "Reason for not applying to the programme: the person did not meet the requirements"
+note: label truncated to 80 characters
+
+. lab var noapply_prog_3  "Reason for not applying to the programme: 'The application or the process was very difficult'"
+note: label truncated to 80 characters
+
+. lab var noapply_prog_4  "Reason for not applying to the programme: the person found out when it was too late."
+note: label truncated to 80 characters
+
+. lab var noapply_prog_5  "Reason for not applying to the programme: the person did NOT trust the programme"
+
+. lab var noapply_prog_6  "Reason for not applying to the programme: the person was NOT interested in the programme"
+note: label truncated to 80 characters
+
+. lab var noapply_prog_7  "Reason for not applying to the programme: Other"
+
+. 
+. 
+. 
+. 
+. *----------------------------------
+. * 2) Generate additional variables
+. *----------------------------------
+. *PES participation dummies
+. gen participant=0
+
+. replace participant=1 if phase_d==1 | phase_d==2
+(123 real changes made)
+
+. 
+. gen phase1 =0
+
+. replace phase1=1 if phase_d==1
+(56 real changes made)
+
+. 
+. gen phase2 =0
+
+. replace phase2 =1 if phase_d==2
+(67 real changes made)
+
+. 
+. gen pes_participation = 1 if phase_d ==8
+(123 missing values generated)
+
+. replace pes_participation = 2 if phase_d == 1
+(56 real changes made)
+
+. replace pes_participation = 3 if phase_d == 2
+(67 real changes made)
+
+. lab def pes_part 1 "NM" 2 "MT" 3 "MR", replace
+
+. lab val pes_participation pes_part
+
+. tab pes_participation, gen(group_)
+
+pes_partici |
+     pation |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         NM |         80       39.41       39.41
+         MT |         56       27.59       67.00
+         MR |         67       33.00      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. lab var group_1 "NM"
+
+. lab var group_2 "MT"
+
+. lab var group_3 "MR"
+
+. 
+. *Treatment priming dummy
+. gen primed =0
+
+. replace primed =1 if treatment_d==1
+(60 real changes made)
+
+. replace primed = . if pes_participation == 1
+(80 real changes made, 80 to missing)
+
+. lab def prime_lab 0 "Control" 1 "Treatment", replace
+
+. lab val primed prime_lab
+
+. 
+. *interaction terms with group
+. gen primed_group2=primed*group_2
+(80 missing values generated)
+
+. gen primed_group3=primed*group_3
+(80 missing values generated)
+
+. 
+. 
+. *donation in percent
+. gen donation_percent = (donation_n*100) / 20000
+
+. replace donation_percent = 0 if donation_n == 0
+(0 real changes made)
+
+. 
+. 
+. *total land size if farmer has more farms
+. gen land_size = farm1_size if farms_n==1
+(79 missing values generated)
+
+. replace land_size = farm1_size + farm2_size  if farms_n==2
+(38 real changes made)
+
+. replace land_size = farm1_size + farm2_size + farm3_size  if farms_n==3
+(18 real changes made)
+
+. replace land_size = farm1_size + farm2_size + farm3_size + farm4_size  if farms_n>=4
+(20 real changes made)
+
+. 
+. *female dummy
+. gen female =0
+
+. replace female =1 if id_sex==1
+(57 real changes made)
+
+. 
+. *education dummy
+. gen max_primary = 0 
+
+. replace max_primary = 1 if id_educ < 4
+(93 real changes made)
+
+. lab var max_primary "Participant completed up to primary school but not more."
+
+. 
+. *collective action in community
+. gen collective_action = 1 if community_activ==1
+(109 missing values generated)
+
+. replace collective_action = 2 if community_activ==5
+(68 real changes made)
+
+. replace collective_action = 3 if community_activ==4
+(25 real changes made)
+
+. replace collective_action = 4 if community_activ==3
+(15 real changes made)
+
+. replace collective_action = 5 if community_activ==2
+(1 real change made)
+
+. lab def collective_lab 1 "Never" 2 "Couple times a year" 3 "Once a month" 4 "Once a week" 5 "Everyday", replace
+
+. lab val collective_action collective_lab
+
+. gen never_collective = 0
+
+. replace never_collective = 1 if collective_action == 1
+(94 real changes made)
+
+. lab var never_collective "=1 if participant never participates in community activities."
+
+. *interaction phase and treatment
+. gen phase1primed = phase1*primed
+(80 missing values generated)
+
+. 
+. gen phase2primed = phase2*primed
+(80 missing values generated)
+
+. 
+. *dummies for all professions and education levels
+. gen agricultor =0
+
+. replace agricultor =1 if econ_activity ==1
+(66 real changes made)
+
+. gen cattlemen =0
+
+. replace cattlemen =1 if econ_activity ==2
+(35 real changes made)
+
+. gen merchant =0
+
+. replace merchant =1 if econ_activity ==3
+(12 real changes made)
+
+. gen employee =0
+
+. replace employee =1 if econ_activity ==4
+(37 real changes made)
+
+. gen laborer =0
+
+. replace laborer =1 if econ_activity ==5
+(2 real changes made)
+
+. gen othereconactivity =0
+
+. replace othereconactivity =1 if econ_activity ==6
+(51 real changes made)
+
+. gen housholdnoeducation =0
+
+. replace housholdnoeducation =1 if id_educ_household==1
+(1 real change made)
+
+. gen housholdincompleteprim =0
+
+. replace housholdincompleteprim =1 if id_educ_household==2
+(9 real changes made)
+
+. gen housholdcompleteprim =0
+
+. replace housholdcompleteprim =1 if id_educ_household==3
+(18 real changes made)
+
+. gen housholdincompletesec =0
+
+. replace housholdincompletesec =1 if id_educ_household==4
+(11 real changes made)
+
+. gen housholdcompletesec =0
+
+. replace housholdcompletesec =1 if id_educ_household==5
+(48 real changes made)
+
+. gen housholdincompletetec =0
+
+. replace housholdincompletetec =1 if id_educ_household==6
+(1 real change made)
+
+. gen housholdcompletetec =0
+
+. replace housholdcompletetec =1 if id_educ_household==7
+(10 real changes made)
+
+. gen housholdincompleteprof =0
+
+. replace housholdincompleteprof =1 if id_educ_household==8
+(18 real changes made)
+
+. gen housholdcompleteprof =0
+
+. replace housholdcompleteprof =1 if id_educ_household==9
+(46 real changes made)
+
+. gen housholdincompletegrad =0
+
+. replace housholdincompletegrad =1 if id_educ_household==10
+(3 real changes made)
+
+. gen housholdcompletegrad =0
+
+. replace housholdcompletegrad =1 if id_educ_household==11
+(38 real changes made)
+
+. gen noeducation =0
+
+. replace noeducation =1 if id_educ==1
+(1 real change made)
+
+. gen incompleteprim =0
+
+. replace incompleteprim =1 if id_educ==2
+(49 real changes made)
+
+. gen completeprim =0
+
+. replace completeprim =1 if id_educ==3
+(43 real changes made)
+
+. gen incompletesec =0
+
+. replace incompletesec =1 if id_educ==4
+(23 real changes made)
+
+. gen completesec =0
+
+. replace completesec =1 if id_educ==5
+(17 real changes made)
+
+. gen incompletetec =0
+
+. replace incompletetec =1 if id_educ==6
+(3 real changes made)
+
+. gen completetec =0
+
+. replace completetec =1 if id_educ==7
+(18 real changes made)
+
+. gen incompleteprof =0
+
+. replace incompleteprof =1 if id_educ==8
+(3 real changes made)
+
+. gen completeprof =0
+
+. replace completeprof =1 if id_educ==9
+(24 real changes made)
+
+. gen incompletegrad =0
+
+. replace incompletegrad =1 if id_educ==10
+(1 real change made)
+
+. gen completegrad =0
+
+. replace completegrad =1 if id_educ==11
+(21 real changes made)
+
+. 
+. *donation experience
+. gen donnever=0
+
+. replace donnever = 1 if donation_ngo==1
+(155 real changes made)
+
+. gen dononce=0
+
+. replace dononce = 1 if donation_ngo==2
+(19 real changes made)
+
+. gen donmany=0
+
+. replace donmany = 1 if donation_ngo==3
+(29 real changes made)
+
+. gen knowsNGO =0
+
+. replace knowsNGO =1 if tropenbos_d==1 | gaia_d==1 | omacha_d==1
+(33 real changes made)
+
+. gen donatedbefore =0
+
+. replace donatedbefore=1 if donation_ngo==2 | donation_ngo==3
+(48 real changes made)
+
+. 
+. 
+. *dummies on selection fairness
+. gen selectionnotfair =0
+
+. replace selectionnotfair = 1 if selection_f==1
+(19 real changes made)
+
+. gen selectionnotveryfair =0
+
+. replace selectionnotveryfair = 1 if selection_f==2
+(19 real changes made)
+
+. gen selectionfair =0
+
+. replace selectionfair = 1 if selection_f==3
+(24 real changes made)
+
+. gen selectiontotallyfair =0
+
+. replace selectiontotallyfair = 1 if selection_f==4
+(41 real changes made)
+
+. gen selectionna=0
+
+. replace selectionna = 1 if selection_f==5
+(20 real changes made)
+
+. gen satisfactionnotatall=0
+
+. replace satisfactionnotatall = 1 if p_satisfaction==1
+(15 real changes made)
+
+. gen satisfactionnot=0
+
+. replace satisfactionnot = 1 if p_satisfaction==2
+(24 real changes made)
+
+. gen satisfactionyes=0
+
+. replace satisfactionyes = 1 if p_satisfaction==3
+(34 real changes made)
+
+. gen satisfactiontotally=0
+
+. replace satisfactiontotally = 1 if p_satisfaction==4
+(48 real changes made)
+
+. gen satisfactionna=0
+
+. replace satisfactionna = 1 if p_satisfaction==5
+(2 real changes made)
+
+. 
+. *pooled
+. gen satisfied =0
+
+. replace satisfied=1 if p_satisfaction ==3 | p_satisfaction ==4
+(82 real changes made)
+
+. gen fairselection =0
+
+. replace fairselection=1 if selection_f ==3 | selection_f ==4
+(65 real changes made)
+
+. 
+. 
+. *dummies for the organisations where subjects want to donate
+. gen TropenBos=0
+
+. replace TropenBos=1 if donation_org==1
+(53 real changes made)
+
+. gen Gaia=0
+
+. replace Gaia=1 if donation_org==2
+(85 real changes made)
+
+. gen Omacha=0
+
+. replace Omacha=1 if donation_org==3
+(37 real changes made)
+
+. gen Any=0
+
+. replace Any=1 if donation_org==4
+(14 real changes made)
+
+. 
+. *pooling different education levels to basic and high education
+. gen basiceducation =0
+
+. replace basiceducation =1 if id_educ <=5
+(133 real changes made)
+
+. gen higheducation =0
+
+. replace higheducation =1 if id_educ >=6
+(70 real changes made)
+
+. gen higheducationprimed = higheducation*primed
+(80 missing values generated)
+
+. gen basiceductionprimed = basiceducation*primed
+(80 missing values generated)
+
+. 
+. *check income levels and convert to PPP
+. sum household_income, detail
+
+               Household monthly income in COP
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%       100000              0
+10%       200000         100000       Obs                 199
+25%       400000         100000       Sum of Wgt.         199
+
+50%       800000                      Mean            1934922
+                        Largest       Std. Dev.       3014523
+75%      2000000       1.00e+07
+90%      5000000       1.50e+07       Variance       9.09e+12
+95%     1.00e+07       2.00e+07       Skewness       3.367925
+99%     2.00e+07       2.00e+07       Kurtosis       16.97734
+
+. *PPP conversion factor from World Bank for Colombia in 2018 = 1322,16
+. gen income_hh_ppp = household_income / 1322.16
+(4 missing values generated)
+
+. lab var income_hh_ppp "PPP adjusted monthly household income"
+
+. 
+. *variables for sample splits:socioeconomic status, age
+. egen aux_income_hh_ppp = median(income_hh_ppp)
+
+. gen high_SES = 1 if income_hh_ppp >= aux_income_hh_ppp
+(98 missing values generated)
+
+. replace high_SES = 0 if income_hh_ppp < aux_income_hh_ppp
+(98 real changes made)
+
+. lab var high_SES "Above median household income." 
+
+. drop aux_income_hh_ppp
+
+. 
+. egen aux_id_age = median(id_age)
+
+. gen high_age = 1 if id_age >= aux_id_age
+(94 missing values generated)
+
+. replace high_age = 0 if id_age < aux_id_age
+(94 real changes made)
+
+. lab var high_age "Aged above median." 
+
+. drop aux_id_age
+
+. 
+. * PES payments per instalment
+. gen amount_per_payment = payment_t / payment_n
+(83 missing values generated)
+
+. gen amount_per_payment_ppp = amount_per_payment / 1322.16
+(83 missing values generated)
+
+. gen payment_ppp = payment_t / 1322.16
+(82 missing values generated)
+
+. 
+. *current residence
+. gen residence_farm = 0
+
+. replace residence_farm = 1 if residence == 1 | residence == 4
+(122 real changes made)
+
+. 
+. *motivations to protect the forest
+. *intrinsic: enjoy_care guilt_forest regret_forest proud_forest
+. *social: neighbors_critic neighbors 
+. *external(payments): care_forest
+. *external (fines): fine_forest
+. *a-motivated: noprotect_forest
+. *LoC: deforestation
+. alpha guilt_forest enjoy_care regret_forest proud_forest,  gen(motivation1) // alpha=0.72
+
+Test scale = mean(unstandardized items)
+
+Average interitem covariance:     .0917102
+Number of items in the scale:            4
+Scale reliability coefficient:      0.7240
+
+. alpha neighbors_critic neighbors, gen(motivation2)   // alpha=0.57
+
+Test scale = mean(unstandardized items)
+
+Average interitem covariance:     .3747744
+Number of items in the scale:            2
+Scale reliability coefficient:      0.5722
+
+. rename care_forest motivation3
+
+. rename fine_forest motivation4
+
+. rename deforestation motivation5
+
+. rename noprotect_forest motivation6
+
+. 
+. 
+. * Save dataset
+. save "$working_ANALYSIS/processed/psa_colombia_rdy.dta", replace
+file C:\Users\istei\OneDrive\Promotion\1_Projects\PES_Colombia\analysis/processed/psa_colombia_rdy.dta saved
+
+. 
+. 
+. 
+. 
+.  
+. ** EOF
+. 
+end of do-file
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. *--------------------------------------------------------------------
+. * SCRIPT: 02_analysis.do
+. * PURPOSE: replicates the tables and figures and saves the results
+. *--------------------------------------------------------------------
+. 
+. *--------------------------------------------------
+. * STRUCTURE OF THE DO-FILE
+. /*
+> 
+>         1) Analysis Main Manuscript
+>         2) Analysis Supplementary Online Materials
+> 
+> */
+. *--------------------------------------------------
+. * Load cleaned dataset
+. clear
+
+. use "$working_ANALYSIS/processed/psa_colombia_rdy.dta"
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. 
+. 
+. ** Regression analysis
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size residence_farm
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. gen treated = 1 if pes_participation > 1
+(80 missing values generated)
+
+. replace treated = 0 if pes_participation == 1
+(80 real changes made)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psmatch2 treated farms_n land_size, caliper(0.094) n(1) logit common noreplacement
+
+Logistic regression                             Number of obs     =        200
+                                                LR chi2(2)        =      19.77
+                                                Prob > chi2       =     0.0001
+Log likelihood = -124.71904                     Pseudo R2         =     0.0734
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0336535   .1257035     0.27   0.789    -.2127209    .2800279
+   land_size |   .0199334   .0063066     3.16   0.002     .0075727    .0322941
+       _cons |  -.1415916     .26747    -0.53   0.597    -.6658232    .3826399
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psgraph
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1))
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.875   1.6125     20.3         |   1.39  0.166 |  1.29
+                       M  | 1.3774   1.8868    -39.5   -94.1 |  -2.31  0.023 |  0.32*
+                          |                                  |               |
+land_size              U  | 52.184   15.554     44.0         |   2.81  0.005 | 16.00*
+                       M  | 14.206   22.366     -9.8    77.7 |  -1.51  0.134 |  0.41*
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.58; 1.73] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.069     18.63    0.000     32.2      32.2      44.3*  15.41*    50
+ Matched   | 0.050      7.33    0.026     24.6      24.6      50.9*   0.32*   100
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. tab _n1
+
+  psmatch2: |
+      ID of |
+    nearest |
+   neighbor |
+      nr. 1 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          2 |          1        1.89        1.89
+          5 |          1        1.89        3.77
+          8 |          1        1.89        5.66
+         15 |          1        1.89        7.55
+         17 |          1        1.89        9.43
+         22 |          1        1.89       11.32
+         34 |          1        1.89       13.21
+         35 |          1        1.89       15.09
+         36 |          1        1.89       16.98
+         37 |          1        1.89       18.87
+         38 |          1        1.89       20.75
+         39 |          1        1.89       22.64
+         40 |          1        1.89       24.53
+         41 |          1        1.89       26.42
+         42 |          1        1.89       28.30
+         43 |          1        1.89       30.19
+         44 |          1        1.89       32.08
+         45 |          1        1.89       33.96
+         46 |          1        1.89       35.85
+         47 |          1        1.89       37.74
+         48 |          1        1.89       39.62
+         49 |          1        1.89       41.51
+         50 |          1        1.89       43.40
+         51 |          1        1.89       45.28
+         52 |          1        1.89       47.17
+         53 |          1        1.89       49.06
+         54 |          1        1.89       50.94
+         55 |          1        1.89       52.83
+         56 |          1        1.89       54.72
+         57 |          1        1.89       56.60
+         58 |          1        1.89       58.49
+         59 |          1        1.89       60.38
+         60 |          1        1.89       62.26
+         61 |          1        1.89       64.15
+         62 |          1        1.89       66.04
+         63 |          1        1.89       67.92
+         64 |          1        1.89       69.81
+         65 |          1        1.89       71.70
+         66 |          1        1.89       73.58
+         67 |          1        1.89       75.47
+         68 |          1        1.89       77.36
+         69 |          1        1.89       79.25
+         70 |          1        1.89       81.13
+         71 |          1        1.89       83.02
+         72 |          1        1.89       84.91
+         73 |          1        1.89       86.79
+         74 |          1        1.89       88.68
+         75 |          1        1.89       90.57
+         76 |          1        1.89       92.45
+         77 |          1        1.89       94.34
+         78 |          1        1.89       96.23
+         79 |          1        1.89       98.11
+         80 |          1        1.89      100.00
+------------+-----------------------------------
+      Total |         53      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. tab _treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         80       40.00       40.00
+    Treated |        120       60.00      100.00
+------------+-----------------------------------
+      Total |        200      100.00
+
+. 
+end of do-file
+
+. tab _support
+
+  psmatch2: |
+     Common |
+    support |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Off support |         67       33.50       33.50
+ On support |        133       66.50      100.00
+------------+-----------------------------------
+      Total |        200      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. gen pair = _id if _treated==0 
+(123 missing values generated)
+
+. replace pair = _n1 if _treated==1
+(53 real changes made)
+
+. bysort pair: egen paircount = count(pair)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair paircount {
+  2.                 rename `x'  no_replace`x'
+  3. }
+
+. replace no_replace_treated=. if no_replacepaircount < 2
+(94 real changes made, 94 to missing)
+
+. 
+end of do-file
+
+. tab id
+
+     Unique |
+ identifier |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        0.99        0.99
+          2 |          2        0.99        1.97
+          3 |          1        0.49        2.46
+          4 |          1        0.49        2.96
+          5 |          1        0.49        3.45
+          7 |          1        0.49        3.94
+          8 |          1        0.49        4.43
+          9 |          1        0.49        4.93
+         10 |          1        0.49        5.42
+         11 |          1        0.49        5.91
+         12 |          1        0.49        6.40
+         13 |          1        0.49        6.90
+         14 |          1        0.49        7.39
+         15 |          1        0.49        7.88
+         17 |          1        0.49        8.37
+         18 |          1        0.49        8.87
+         19 |          1        0.49        9.36
+         20 |          1        0.49        9.85
+         21 |          1        0.49       10.34
+         27 |          1        0.49       10.84
+         30 |          1        0.49       11.33
+         31 |          1        0.49       11.82
+         32 |          1        0.49       12.32
+         33 |          1        0.49       12.81
+         34 |          1        0.49       13.30
+         36 |          1        0.49       13.79
+         37 |          1        0.49       14.29
+         38 |          1        0.49       14.78
+         40 |          1        0.49       15.27
+         41 |          1        0.49       15.76
+         45 |          1        0.49       16.26
+         54 |          1        0.49       16.75
+         55 |          1        0.49       17.24
+         75 |          1        0.49       17.73
+         87 |          1        0.49       18.23
+         95 |          1        0.49       18.72
+         96 |          1        0.49       19.21
+         97 |          1        0.49       19.70
+         98 |          1        0.49       20.20
+         99 |          1        0.49       20.69
+        100 |          1        0.49       21.18
+        101 |          1        0.49       21.67
+        103 |          1        0.49       22.17
+        104 |          1        0.49       22.66
+        105 |          1        0.49       23.15
+        107 |          1        0.49       23.65
+        108 |          1        0.49       24.14
+        109 |          1        0.49       24.63
+        111 |          1        0.49       25.12
+        112 |          1        0.49       25.62
+        116 |          1        0.49       26.11
+        118 |          1        0.49       26.60
+        120 |          1        0.49       27.09
+        122 |          1        0.49       27.59
+        123 |          1        0.49       28.08
+        124 |          1        0.49       28.57
+        126 |          1        0.49       29.06
+        127 |          1        0.49       29.56
+        134 |          1        0.49       30.05
+        135 |          1        0.49       30.54
+        141 |          1        0.49       31.03
+        142 |          1        0.49       31.53
+        143 |          1        0.49       32.02
+        144 |          1        0.49       32.51
+        145 |          1        0.49       33.00
+        147 |          1        0.49       33.50
+        148 |          1        0.49       33.99
+        149 |          1        0.49       34.48
+        150 |          1        0.49       34.98
+        153 |          1        0.49       35.47
+        154 |          1        0.49       35.96
+        156 |          1        0.49       36.45
+        158 |          1        0.49       36.95
+        161 |          1        0.49       37.44
+        162 |          1        0.49       37.93
+        164 |          1        0.49       38.42
+        166 |          1        0.49       38.92
+        167 |          1        0.49       39.41
+        168 |          1        0.49       39.90
+        169 |          1        0.49       40.39
+        172 |          1        0.49       40.89
+        177 |          2        0.99       41.87
+        178 |          1        0.49       42.36
+        180 |          1        0.49       42.86
+        183 |          1        0.49       43.35
+        184 |          1        0.49       43.84
+        186 |          1        0.49       44.33
+        187 |          1        0.49       44.83
+        190 |          1        0.49       45.32
+        191 |          1        0.49       45.81
+        192 |          1        0.49       46.31
+        196 |          1        0.49       46.80
+        197 |          1        0.49       47.29
+        198 |          1        0.49       47.78
+        199 |          1        0.49       48.28
+        200 |          1        0.49       48.77
+        201 |          1        0.49       49.26
+        202 |          1        0.49       49.75
+        205 |          1        0.49       50.25
+        206 |          1        0.49       50.74
+        208 |          1        0.49       51.23
+        209 |          1        0.49       51.72
+        210 |          1        0.49       52.22
+        212 |          2        0.99       53.20
+        213 |          1        0.49       53.69
+        214 |          1        0.49       54.19
+        215 |          1        0.49       54.68
+        216 |          1        0.49       55.17
+        218 |          1        0.49       55.67
+        219 |          1        0.49       56.16
+        220 |          1        0.49       56.65
+        221 |          1        0.49       57.14
+        222 |          1        0.49       57.64
+        225 |          2        0.99       58.62
+        226 |          2        0.99       59.61
+        227 |          1        0.49       60.10
+        229 |          1        0.49       60.59
+        230 |          3        1.48       62.07
+        231 |          1        0.49       62.56
+        232 |          1        0.49       63.05
+        233 |          1        0.49       63.55
+        235 |          1        0.49       64.04
+        239 |          1        0.49       64.53
+        240 |          1        0.49       65.02
+        250 |          1        0.49       65.52
+        310 |          1        0.49       66.01
+        404 |          1        0.49       66.50
+        405 |          1        0.49       67.00
+        406 |          1        0.49       67.49
+        408 |          1        0.49       67.98
+        409 |          1        0.49       68.47
+        411 |          2        0.99       69.46
+        412 |          1        0.49       69.95
+        413 |          1        0.49       70.44
+        414 |          2        0.99       71.43
+        415 |          1        0.49       71.92
+        416 |          1        0.49       72.41
+        418 |          1        0.49       72.91
+        420 |          2        0.99       73.89
+        421 |          2        0.99       74.88
+        422 |          3        1.48       76.35
+        423 |          4        1.97       78.33
+        424 |          1        0.49       78.82
+        425 |          4        1.97       80.79
+        428 |          1        0.49       81.28
+        430 |          4        1.97       83.25
+        431 |          1        0.49       83.74
+        434 |          1        0.49       84.24
+        436 |          1        0.49       84.73
+        437 |          2        0.99       85.71
+        438 |          2        0.99       86.70
+        439 |          1        0.49       87.19
+        440 |          3        1.48       88.67
+        441 |          1        0.49       89.16
+        442 |          1        0.49       89.66
+        443 |          1        0.49       90.15
+        445 |          1        0.49       90.64
+        446 |          1        0.49       91.13
+        450 |          1        0.49       91.63
+        501 |          1        0.49       92.12
+        502 |          1        0.49       92.61
+        504 |          1        0.49       93.10
+        505 |          1        0.49       93.60
+        520 |          1        0.49       94.09
+        521 |          1        0.49       94.58
+        522 |          1        0.49       95.07
+        523 |          1        0.49       95.57
+        530 |          1        0.49       96.06
+        531 |          1        0.49       96.55
+        532 |          1        0.49       97.04
+        535 |          1        0.49       97.54
+        540 |          1        0.49       98.03
+        541 |          1        0.49       98.52
+        550 |          1        0.49       99.01
+       2025 |          2        0.99      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. *Generate unique identifier
+. drop id // not unique
+
+. gen id = _n
+
+. 
+end of do-file
+
+. tab no_replace_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         53       50.00       50.00
+    Treated |         53       50.00      100.00
+------------+-----------------------------------
+      Total |        106      100.00
+
+. bys no_replace_treated: sum pes_participation
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = Untreated
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pes_partic~n |         53           1           0          1          1
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = Treated
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pes_partic~n |         53    2.490566    .5046949          2          3
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = .
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pes_partic~n |         97     2.14433    .8290267          1          3
+
+
+. bys no_replace_treated: tab pes_participation
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = Untreated
+
+pes_partici |
+     pation |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         NM |         53      100.00      100.00
+------------+-----------------------------------
+      Total |         53      100.00
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = Treated
+
+pes_partici |
+     pation |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         MT |         27       50.94       50.94
+         MR |         26       49.06      100.00
+------------+-----------------------------------
+      Total |         53      100.00
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-> no_replace_treated = .
+
+pes_partici |
+     pation |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         NM |         27       27.84       27.84
+         MT |         29       29.90       57.73
+         MR |         41       42.27      100.00
+------------+-----------------------------------
+      Total |         97      100.00
+
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psmatch2 treated farms_n land_size, caliper(0.094) n(3) logit common noreplacement
+Matching without replacement is only implemented with 1-to-1 propensity score matching
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psmatch2 treated farms_n land_size, caliper(0.2) logit common noreplacement
+
+Logistic regression                             Number of obs     =        200
+                                                LR chi2(2)        =      19.77
+                                                Prob > chi2       =     0.0001
+Log likelihood = -124.71904                     Pseudo R2         =     0.0734
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0336535   .1257035     0.27   0.789    -.2127209    .2800279
+   land_size |   .0199334   .0063066     3.16   0.002     .0075727    .0322941
+       _cons |  -.1415916     .26747    -0.53   0.597    -.6658232    .3826399
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. psgraph
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1))
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.875   1.6125     20.3         |   1.39  0.166 |  1.29
+                       M  | 1.5283   1.8868    -27.8   -36.6 |  -1.41  0.162 |  0.76
+                          |                                  |               |
+land_size              U  | 52.184   15.554     44.0         |   2.81  0.005 | 16.00*
+                       M  | 9.5575   22.366    -15.4    65.0 |  -2.65  0.009 |  0.13*
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.58; 1.73] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.069     18.63    0.000     32.2      32.2      44.3*  15.41*    50
+ Matched   | 0.066      9.75    0.008     21.6      21.6      55.4*   0.16*    50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. tab _support
+
+  psmatch2: |
+     Common |
+    support |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Off support |         67       33.50       33.50
+ On support |        133       66.50      100.00
+------------+-----------------------------------
+      Total |        200      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psmatch2 treated farms_n land_size, caliper(0.094) logit common noreplacement
+
+Logistic regression                             Number of obs     =        200
+                                                LR chi2(2)        =      19.77
+                                                Prob > chi2       =     0.0001
+Log likelihood = -124.71904                     Pseudo R2         =     0.0734
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0336535   .1257035     0.27   0.789    -.2127209    .2800279
+   land_size |   .0199334   .0063066     3.16   0.002     .0075727    .0322941
+       _cons |  -.1415916     .26747    -0.53   0.597    -.6658232    .3826399
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. 
+end of do-file
+
+. tab _weight
+
+  psmatch2: |
+  weight of |
+    matched |
+   controls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        106      100.00      100.00
+------------+-----------------------------------
+      Total |        106      100.00
+
+. tab _id
+
+  psmatch2: |
+ Identifier |
+       (ID) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          1        0.49        0.49
+          2 |          1        0.49        0.99
+          3 |          1        0.49        1.48
+          4 |          1        0.49        1.97
+          5 |          1        0.49        2.46
+          6 |          1        0.49        2.96
+          7 |          1        0.49        3.45
+          8 |          1        0.49        3.94
+          9 |          1        0.49        4.43
+         10 |          1        0.49        4.93
+         11 |          1        0.49        5.42
+         12 |          1        0.49        5.91
+         13 |          1        0.49        6.40
+         14 |          1        0.49        6.90
+         15 |          1        0.49        7.39
+         16 |          1        0.49        7.88
+         17 |          1        0.49        8.37
+         18 |          1        0.49        8.87
+         19 |          1        0.49        9.36
+         20 |          1        0.49        9.85
+         21 |          1        0.49       10.34
+         22 |          1        0.49       10.84
+         23 |          1        0.49       11.33
+         24 |          1        0.49       11.82
+         25 |          1        0.49       12.32
+         26 |          1        0.49       12.81
+         27 |          1        0.49       13.30
+         28 |          1        0.49       13.79
+         29 |          1        0.49       14.29
+         30 |          1        0.49       14.78
+         31 |          1        0.49       15.27
+         32 |          1        0.49       15.76
+         33 |          1        0.49       16.26
+         34 |          1        0.49       16.75
+         35 |          1        0.49       17.24
+         36 |          1        0.49       17.73
+         37 |          1        0.49       18.23
+         38 |          1        0.49       18.72
+         39 |          1        0.49       19.21
+         40 |          1        0.49       19.70
+         41 |          1        0.49       20.20
+         42 |          1        0.49       20.69
+         43 |          1        0.49       21.18
+         44 |          1        0.49       21.67
+         45 |          1        0.49       22.17
+         46 |          1        0.49       22.66
+         47 |          1        0.49       23.15
+         48 |          1        0.49       23.65
+         49 |          1        0.49       24.14
+         50 |          1        0.49       24.63
+         51 |          1        0.49       25.12
+         52 |          1        0.49       25.62
+         53 |          1        0.49       26.11
+         54 |          1        0.49       26.60
+         55 |          1        0.49       27.09
+         56 |          1        0.49       27.59
+         57 |          1        0.49       28.08
+         58 |          1        0.49       28.57
+         59 |          1        0.49       29.06
+         60 |          1        0.49       29.56
+         61 |          1        0.49       30.05
+         62 |          1        0.49       30.54
+         63 |          1        0.49       31.03
+         64 |          1        0.49       31.53
+         65 |          1        0.49       32.02
+         66 |          1        0.49       32.51
+         67 |          1        0.49       33.00
+         68 |          1        0.49       33.50
+         69 |          1        0.49       33.99
+         70 |          1        0.49       34.48
+         71 |          1        0.49       34.98
+         72 |          1        0.49       35.47
+         73 |          1        0.49       35.96
+         74 |          1        0.49       36.45
+         75 |          1        0.49       36.95
+         76 |          1        0.49       37.44
+         77 |          1        0.49       37.93
+         78 |          1        0.49       38.42
+         79 |          1        0.49       38.92
+         80 |          1        0.49       39.41
+         81 |          1        0.49       39.90
+         82 |          1        0.49       40.39
+         83 |          1        0.49       40.89
+         84 |          1        0.49       41.38
+         85 |          1        0.49       41.87
+         86 |          1        0.49       42.36
+         87 |          1        0.49       42.86
+         88 |          1        0.49       43.35
+         89 |          1        0.49       43.84
+         90 |          1        0.49       44.33
+         91 |          1        0.49       44.83
+         92 |          1        0.49       45.32
+         93 |          1        0.49       45.81
+         94 |          1        0.49       46.31
+         95 |          1        0.49       46.80
+         96 |          1        0.49       47.29
+         97 |          1        0.49       47.78
+         98 |          1        0.49       48.28
+         99 |          1        0.49       48.77
+        100 |          1        0.49       49.26
+        101 |          1        0.49       49.75
+        102 |          1        0.49       50.25
+        103 |          1        0.49       50.74
+        104 |          1        0.49       51.23
+        105 |          1        0.49       51.72
+        106 |          1        0.49       52.22
+        107 |          1        0.49       52.71
+        108 |          1        0.49       53.20
+        109 |          1        0.49       53.69
+        110 |          1        0.49       54.19
+        111 |          1        0.49       54.68
+        112 |          1        0.49       55.17
+        113 |          1        0.49       55.67
+        114 |          1        0.49       56.16
+        115 |          1        0.49       56.65
+        116 |          1        0.49       57.14
+        117 |          1        0.49       57.64
+        118 |          1        0.49       58.13
+        119 |          1        0.49       58.62
+        120 |          1        0.49       59.11
+        121 |          1        0.49       59.61
+        122 |          1        0.49       60.10
+        123 |          1        0.49       60.59
+        124 |          1        0.49       61.08
+        125 |          1        0.49       61.58
+        126 |          1        0.49       62.07
+        127 |          1        0.49       62.56
+        128 |          1        0.49       63.05
+        129 |          1        0.49       63.55
+        130 |          1        0.49       64.04
+        131 |          1        0.49       64.53
+        132 |          1        0.49       65.02
+        133 |          1        0.49       65.52
+        134 |          1        0.49       66.01
+        135 |          1        0.49       66.50
+        136 |          1        0.49       67.00
+        137 |          1        0.49       67.49
+        138 |          1        0.49       67.98
+        139 |          1        0.49       68.47
+        140 |          1        0.49       68.97
+        141 |          1        0.49       69.46
+        142 |          1        0.49       69.95
+        143 |          1        0.49       70.44
+        144 |          1        0.49       70.94
+        145 |          1        0.49       71.43
+        146 |          1        0.49       71.92
+        147 |          1        0.49       72.41
+        148 |          1        0.49       72.91
+        149 |          1        0.49       73.40
+        150 |          1        0.49       73.89
+        151 |          1        0.49       74.38
+        152 |          1        0.49       74.88
+        153 |          1        0.49       75.37
+        154 |          1        0.49       75.86
+        155 |          1        0.49       76.35
+        156 |          1        0.49       76.85
+        157 |          1        0.49       77.34
+        158 |          1        0.49       77.83
+        159 |          1        0.49       78.33
+        160 |          1        0.49       78.82
+        161 |          1        0.49       79.31
+        162 |          1        0.49       79.80
+        163 |          1        0.49       80.30
+        164 |          1        0.49       80.79
+        165 |          1        0.49       81.28
+        166 |          1        0.49       81.77
+        167 |          1        0.49       82.27
+        168 |          1        0.49       82.76
+        169 |          1        0.49       83.25
+        170 |          1        0.49       83.74
+        171 |          1        0.49       84.24
+        172 |          1        0.49       84.73
+        173 |          1        0.49       85.22
+        174 |          1        0.49       85.71
+        175 |          1        0.49       86.21
+        176 |          1        0.49       86.70
+        177 |          1        0.49       87.19
+        178 |          1        0.49       87.68
+        179 |          1        0.49       88.18
+        180 |          1        0.49       88.67
+        181 |          1        0.49       89.16
+        182 |          1        0.49       89.66
+        183 |          1        0.49       90.15
+        184 |          1        0.49       90.64
+        185 |          1        0.49       91.13
+        186 |          1        0.49       91.63
+        187 |          1        0.49       92.12
+        188 |          1        0.49       92.61
+        189 |          1        0.49       93.10
+        190 |          1        0.49       93.60
+        191 |          1        0.49       94.09
+        192 |          1        0.49       94.58
+        193 |          1        0.49       95.07
+        194 |          1        0.49       95.57
+        195 |          1        0.49       96.06
+        196 |          1        0.49       96.55
+        197 |          1        0.49       97.04
+        198 |          1        0.49       97.54
+        199 |          1        0.49       98.03
+        200 |          1        0.49       98.52
+        201 |          1        0.49       99.01
+        202 |          1        0.49       99.51
+        203 |          1        0.49      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab _n1
+
+  psmatch2: |
+      ID of |
+    nearest |
+   neighbor |
+      nr. 1 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          2 |          1        1.89        1.89
+          5 |          1        1.89        3.77
+          8 |          1        1.89        5.66
+         15 |          1        1.89        7.55
+         17 |          1        1.89        9.43
+         22 |          1        1.89       11.32
+         34 |          1        1.89       13.21
+         35 |          1        1.89       15.09
+         36 |          1        1.89       16.98
+         37 |          1        1.89       18.87
+         38 |          1        1.89       20.75
+         39 |          1        1.89       22.64
+         40 |          1        1.89       24.53
+         41 |          1        1.89       26.42
+         42 |          1        1.89       28.30
+         43 |          1        1.89       30.19
+         44 |          1        1.89       32.08
+         45 |          1        1.89       33.96
+         46 |          1        1.89       35.85
+         47 |          1        1.89       37.74
+         48 |          1        1.89       39.62
+         49 |          1        1.89       41.51
+         50 |          1        1.89       43.40
+         51 |          1        1.89       45.28
+         52 |          1        1.89       47.17
+         53 |          1        1.89       49.06
+         54 |          1        1.89       50.94
+         55 |          1        1.89       52.83
+         56 |          1        1.89       54.72
+         57 |          1        1.89       56.60
+         58 |          1        1.89       58.49
+         59 |          1        1.89       60.38
+         60 |          1        1.89       62.26
+         61 |          1        1.89       64.15
+         62 |          1        1.89       66.04
+         63 |          1        1.89       67.92
+         64 |          1        1.89       69.81
+         65 |          1        1.89       71.70
+         66 |          1        1.89       73.58
+         67 |          1        1.89       75.47
+         68 |          1        1.89       77.36
+         69 |          1        1.89       79.25
+         70 |          1        1.89       81.13
+         71 |          1        1.89       83.02
+         72 |          1        1.89       84.91
+         73 |          1        1.89       86.79
+         74 |          1        1.89       88.68
+         75 |          1        1.89       90.57
+         76 |          1        1.89       92.45
+         77 |          1        1.89       94.34
+         78 |          1        1.89       96.23
+         79 |          1        1.89       98.11
+         80 |          1        1.89      100.00
+------------+-----------------------------------
+      Total |         53      100.00
+
+. tab _nn
+
+psmatch2: # |
+    matched |
+  neighbors |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        141       72.68       72.68
+          1 |         53       27.32      100.00
+------------+-----------------------------------
+      Total |        194      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STDc4_000000.tmp"
+
+. psmatch2 treated farms_n land_size, caliper(0.094) n(1) logit common
+
+Logistic regression                             Number of obs     =        200
+                                                LR chi2(2)        =      19.77
+                                                Prob > chi2       =     0.0001
+Log likelihood = -124.71904                     Pseudo R2         =     0.0734
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0336535   .1257035     0.27   0.789    -.2127209    .2800279
+   land_size |   .0199334   .0063066     3.16   0.002     .0075727    .0322941
+       _cons |  -.1415916     .26747    -0.53   0.597    -.6658232    .3826399
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. psgraph
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1))
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.875   1.6125     20.3         |   1.39  0.166 |  1.29
+                       M  |  1.807   1.8684     -4.8    76.6 |  -0.37  0.712 |  1.07
+                          |                                  |               |
+land_size              U  | 52.184   15.554     44.0         |   2.81  0.005 | 16.00*
+                       M  | 31.757   31.671      0.1    99.8 |   0.02  0.985 |  0.99
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.69; 1.45] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.069     18.63    0.000     32.2      32.2      44.3*  15.41*    50
+ Matched   | 0.000      0.15    0.927      2.4       2.4       5.2    1.16      0
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. gr save "$working_ANALYSIS/results/intermediate/figureS1_matching_bias_reduction.gph", replace
+(file C:\Users\istei\OneDrive\Promotion\1_Projects\PES_Colombia\analysis/results/intermediate/figureS1_matching_bias_reduction.gph saved
+> )
+
+. gr export "$working_ANALYSIS/results/figures/figureS1_matching_bias_reduction.tif", replace width(3465)
+(file C:\Users\istei\OneDrive\Promotion\1_Projects\PES_Colombia\analysis/results/figures/figureS1_matching_bias_reduction.tif written in
+>  TIFF format)
+
+. tab _n1
+
+  psmatch2: |
+      ID of |
+    nearest |
+   neighbor |
+      nr. 1 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          2 |          1        0.88        0.88
+          5 |          1        0.88        1.75
+          8 |          1        0.88        2.63
+         15 |          1        0.88        3.51
+         17 |          1        0.88        4.39
+         22 |          1        0.88        5.26
+         34 |          2        1.75        7.02
+         36 |          4        3.51       10.53
+         39 |          4        3.51       14.04
+         40 |          5        4.39       18.42
+         43 |          2        1.75       20.18
+         44 |          5        4.39       24.56
+         45 |          1        0.88       25.44
+         47 |          1        0.88       26.32
+         48 |          2        1.75       28.07
+         49 |          2        1.75       29.82
+         50 |          1        0.88       30.70
+         51 |          6        5.26       35.96
+         52 |          3        2.63       38.60
+         55 |          3        2.63       41.23
+         56 |          1        0.88       42.11
+         58 |          2        1.75       43.86
+         59 |          2        1.75       45.61
+         60 |          1        0.88       46.49
+         62 |          2        1.75       48.25
+         63 |          3        2.63       50.88
+         65 |          1        0.88       51.75
+         66 |          3        2.63       54.39
+         67 |          3        2.63       57.02
+         68 |          5        4.39       61.40
+         69 |          4        3.51       64.91
+         70 |          2        1.75       66.67
+         71 |          3        2.63       69.30
+         72 |          4        3.51       72.81
+         73 |          2        1.75       74.56
+         74 |          2        1.75       76.32
+         75 |          5        4.39       80.70
+         76 |          9        7.89       88.60
+         77 |          1        0.88       89.47
+         78 |          7        6.14       95.61
+         79 |          4        3.51       99.12
+         80 |          1        0.88      100.00
+------------+-----------------------------------
+      Total |        114      100.00
+
+. tab _treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         80       40.00       40.00
+    Treated |        120       60.00      100.00
+------------+-----------------------------------
+      Total |        200      100.00
+
+. * gen matched pair identifier
+. gen pair = _id if _treated==0 
+(123 missing values generated)
+
+. replace pair = _n1 if _treated==1
+(114 real changes made)
+
+. bysort pair: egen paircount = count(pair)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair paircount {
+  2.                 rename `x'  matched`x'
+  3. }
+
+. replace matched_treated=. if matchedpaircount < 2
+(44 real changes made, 44 to missing)
+
+. 
+end of do-file
+
+. tab matched_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         42       26.92       26.92
+    Treated |        114       73.08      100.00
+------------+-----------------------------------
+      Total |        156      100.00
+
+. tab matched_weight
+
+  psmatch2: |
+  weight of |
+    matched |
+   controls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        128       82.05       82.05
+          2 |         10        6.41       88.46
+          3 |          6        3.85       92.31
+          4 |          5        3.21       95.51
+          5 |          4        2.56       98.08
+          6 |          1        0.64       98.72
+          7 |          1        0.64       99.36
+          9 |          1        0.64      100.00
+------------+-----------------------------------
+      Total |        156      100.00
+
+. tab matched_weight if matched_treated==0
+
+  psmatch2: |
+  weight of |
+    matched |
+   controls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         14       33.33       33.33
+          2 |         10       23.81       57.14
+          3 |          6       14.29       71.43
+          4 |          5       11.90       83.33
+          5 |          4        9.52       92.86
+          6 |          1        2.38       95.24
+          7 |          1        2.38       97.62
+          9 |          1        2.38      100.00
+------------+-----------------------------------
+      Total |         42      100.00
+
+. tab matched_weight if matched_treated==1
+
+  psmatch2: |
+  weight of |
+    matched |
+   controls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        114      100.00      100.00
+------------+-----------------------------------
+      Total |        114      100.00
+
+. sum matched_weight if matched_treated==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+matched_we~t |        114           1           0          1          1
+
+. sum matched_weight if matched_treated==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+matched_we~t |         42    2.714286      1.8778          1          9
+
+. exit, clear

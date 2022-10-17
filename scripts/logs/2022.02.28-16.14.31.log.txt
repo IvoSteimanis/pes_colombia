@@ -1,0 +1,698 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/logs/2022.02.28-16.14.31.log.txt
+  log type:  text
+ opened on:  28 Feb 2022, 16:14:31
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time: 28 Feb 2022 16:14:31
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "C:\Users\istei\Google Drive\Promotion\1_Projects\PES_Colombia\analysis/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmatapath;lmatapostest;lmata
+> pss;lmatasem;lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensity and "xx yy zz%50" red
+> uces transparency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" ///
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" ///
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all other text
+. 
+. }
+
+. * -------------------------------------------------
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD47a0_000000.tmp"
+
+. *--------------------------------------------------------------------------------------
+. * SCRIPT: 01_clean_generate.do
+. * PURPOSE: cleans the raw excel data and generates additional variables for analysis
+. *--------------------------------------------------------------------------------------
+. 
+. *----------------------------
+. * 1) Import excel dataset and cleaning
+. *----------------------------
+. import excel  "$working_ANALYSIS/scripts/psa_data.xlsx", firstrow
+file C:/Users/istei/Google Drive/Promotion/1_Projects/PES_Colombia/analysis/scripts/psa_data.xlsx not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD47a0_000000.tmp"
+
+. *--------------------------------------------------------------------------------------
+. * SCRIPT: 01_clean_generate.do
+. * PURPOSE: cleans the raw excel data and generates additional variables for analysis
+. *--------------------------------------------------------------------------------------
+. 
+. *----------------------------
+. * 1) Import excel dataset and cleaning
+. *----------------------------
+. import excel  "$working_ANALYSIS/data/psa_data.xlsx", firstrow
+(106 vars, 203 obs)
+
+. 
+. *Correcting data entry errors with help of colombian team
+. replace farms_n =. if id==96
+(1 real change made, 1 to missing)
+
+. replace farm1_size =. if id==10 
+(1 real change made, 1 to missing)
+
+. replace farm1_size =. if id==235
+(1 real change made, 1 to missing)
+
+. replace farm2_unit =1 if id==221
+(1 real change made)
+
+. replace payment_n =. if id==15
+(1 real change made, 1 to missing)
+
+. replace donation_n = 0 if donation_n==.
+(14 real changes made)
+
+. replace income_n = 18000 if id==172
+(1 real change made)
+
+. replace income_n = 18000 if id==411 & donation_n==2000
+(1 real change made)
+
+. replace household_income=. if id==10
+(1 real change made, 1 to missing)
+
+. replace household_income=. if id==96
+(1 real change made, 1 to missing)
+
+. replace household_income=500000 if id==97
+(1 real change made)
+
+. replace household_income=. if id==142
+(1 real change made, 1 to missing)
+
+. replace household_income=. if id==226 & treatment_d==2
+(1 real change made, 1 to missing)
+
+. 
+. 
+. *redefine data (adjust unit size)
+. replace farm1_size = farm1_size/10000 if farm1_unit==2
+(5 real changes made)
+
+. replace farm1_size = farm1_size*0.64 if farm1_unit==3
+(71 real changes made)
+
+. replace farm1_size = farm1_size*0.64 if farm1_unit==4
+(0 real changes made)
+
+. replace farm2_size = farm2_size/10000 if farm2_unit==2
+(2 real changes made)
+
+. replace farm2_size = farm2_size*0.64 if farm2_unit==3
+(32 real changes made)
+
+. replace farm2_size = farm2_size*0.64 if farm2_unit==4
+(0 real changes made)
+
+. replace farm2_size =. if farm2_size==0
+(1 real change made, 1 to missing)
+
+. replace farm3_size = farm3_size/10000 if farm3_unit==2
+(4 real changes made)
+
+. replace farm3_size = farm3_size*0.64 if farm3_unit==3
+(14 real changes made)
+
+. replace farm3_size = farm3_size*0.64 if farm3_unit==4
+(0 real changes made)
+
+. replace farm3_size =. if farm3_size==0
+(1 real change made, 1 to missing)
+
+. replace farm4_size = farm4_size/10000 if farm4_unit==2
+(1 real change made)
+
+. replace farm4_size = farm4_size*0.64 if farm4_unit==3
+(8 real changes made)
+
+. replace farm4_size = farm4_size*0.64 if farm4_unit==4
+(0 real changes made)
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD47a0_000000.tmp"
+
+. lab var assistant "Name of the assistant performing the survey"
+
+. 
+. 
+. 
+. *----------------------------------
+. 
+end of do-file
+
+. tab assistant
+
+     Name of the |
+       assistant |
+  performing the |
+          survey |      Freq.     Percent        Cum.
+-----------------+-----------------------------------
+     Ferley Ruíz |        107       52.71       52.71
+Francisco Bernal |         46       22.66       75.37
+Santiago Caicedo |         50       24.63      100.00
+-----------------+-----------------------------------
+           Total |        203      100.00
+
+. tab age
+variable age not found
+r(111);
+
+. tab id_age
+
+     id_age |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |          1        0.49        0.49
+         19 |          1        0.49        0.99
+         22 |          1        0.49        1.48
+         25 |          1        0.49        1.97
+         27 |          1        0.49        2.46
+         28 |          2        0.99        3.45
+         32 |          1        0.49        3.94
+         34 |          2        0.99        4.93
+         35 |          1        0.49        5.42
+         37 |          3        1.48        6.90
+         38 |          4        1.97        8.87
+         39 |          3        1.48       10.34
+         40 |          1        0.49       10.84
+         41 |          1        0.49       11.33
+         43 |          3        1.48       12.81
+         44 |          3        1.48       14.29
+         45 |          4        1.97       16.26
+         46 |          3        1.48       17.73
+         47 |          3        1.48       19.21
+         48 |          2        0.99       20.20
+         49 |          2        0.99       21.18
+         50 |          7        3.45       24.63
+         51 |          1        0.49       25.12
+         52 |          6        2.96       28.08
+         53 |         10        4.93       33.00
+         54 |          8        3.94       36.95
+         55 |         10        4.93       41.87
+         56 |          3        1.48       43.35
+         57 |          6        2.96       46.31
+         58 |          8        3.94       50.25
+         59 |          2        0.99       51.23
+         60 |          8        3.94       55.17
+         61 |          6        2.96       58.13
+         62 |         12        5.91       64.04
+         63 |          5        2.46       66.50
+         64 |          4        1.97       68.47
+         65 |          7        3.45       71.92
+         66 |          3        1.48       73.40
+         67 |          2        0.99       74.38
+         68 |          1        0.49       74.88
+         69 |          4        1.97       76.85
+         70 |          5        2.46       79.31
+         71 |          4        1.97       81.28
+         72 |          7        3.45       84.73
+         73 |          3        1.48       86.21
+         74 |          6        2.96       89.16
+         75 |          3        1.48       90.64
+         76 |          2        0.99       91.63
+         77 |          1        0.49       92.12
+         78 |          6        2.96       95.07
+         80 |          2        0.99       96.06
+         81 |          1        0.49       96.55
+         82 |          2        0.99       97.54
+         83 |          1        0.49       98.03
+         84 |          1        0.49       98.52
+         85 |          1        0.49       99.01
+         87 |          1        0.49       99.51
+         88 |          1        0.49      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab treatment_d
+
+treatment_d |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         60       29.56       29.56
+          2 |         63       31.03       60.59
+          4 |         80       39.41      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. 
+. 
+. 
+. 
+. tab phase_d
+
+    phase_d |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         56       27.59       27.59
+          2 |         67       33.00       60.59
+          8 |         80       39.41      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD47a0_000000.tmp"
+
+. lab var treatment_d "Treatment participants was assigned to"
+
+. lab def treat_lab 1 "Treatment 1" 2 "Treatment 2" 4 "Control", replace
+
+. lab val treatment_d treat_lab
+
+. lab var phase_d "Which phase of the PES did the participant complete?"
+
+. lab def phase_lab 1 "Phase 1" 2 "Phase 2" 8 "None", replace
+
+. lab val phase_d phase_lab
+
+. 
+end of do-file
+
+. tab phase_d
+
+Which phase |
+ of the PES |
+    did the |
+participant |
+  complete? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Phase 1 |         56       27.59       27.59
+    Phase 2 |         67       33.00       60.59
+       None |         80       39.41      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab panel_d
+
+    panel_d |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        128       63.05       63.05
+          1 |         75       36.95      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab payment_u
+
+                              payment_u |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                                      . |          2        1.63        1.63
+50% par reinversión en la finca y pro.. |          1        0.81        2.44
+                                 Ahorro |          1        0.81        3.25
+  Ahorro e invertir en la propia finca. |          1        0.81        4.07
+Alimentación y estudio de la familia... |          1        0.81        4.88
+Alimentos y ayuda del estudio de los .. |          1        0.81        5.69
+         Arreglo de la casa donde vive. |          1        0.81        6.50
+Arregló de cercas de la finca. Dar di.. |          1        0.81        7.32
+Arregló su casa, pagó estudio a sus h.. |          1        0.81        8.13
+Aumentar la participación en el proce.. |          1        0.81        8.94
+Ayudas de pagar impuestos y reforesta.. |          1        0.81        9.76
+Beneficios de la misma finca, protecc.. |          1        0.81       10.57
+            Cercar linderos de su finca |          1        0.81       11.38
+Cercar los nacimientos de agua. Y pag.. |          1        0.81       12.20
+Compramos árboles para sembrar en la .. |          1        0.81       13.01
+              Comprar electrodomésticos |          1        0.81       13.82
+Comprar ganado, ahorro para comprar o.. |          1        0.81       14.63
+Comprar árboles nativos y pagar impue.. |          1        0.81       15.45
+                      Compré unas vacas |          1        0.81       16.26
+Construir cerca, comprar árboles y su.. |          1        0.81       17.07
+           Educación y cosas del hogar. |          1        0.81       17.89
+El pago fue reembolso de la gobernaci.. |          1        0.81       18.70
+En la conservación y preservación de .. |          1        0.81       19.51
+               En los cultivos de mora. |          1        0.81       20.33
+Estudio de la hija, para la salud y p.. |          1        0.81       21.14
+Fase 1 se hizo una cerca y se limpió... |          1        0.81       21.95
+          Gasto personales y del hogar. |          1        0.81       22.76
+Gastos del señor Fortunato Díaz que s.. |          1        0.81       23.58
+                      Gastos personales |          1        0.81       24.39
+Gastos personales (alimentación) y tr.. |          1        0.81       25.20
+Gastos personales y compré uno alambr.. |          1        0.81       26.02
+          Gastos personales y medicinas |          1        0.81       26.83
+Gastos personales y pagar deudas, par.. |          1        0.81       27.64
+                      Gatos de la casa. |          1        0.81       28.46
+Hacer actividades en la finca árboles.. |          1        0.81       29.27
+Impuestos del predio incluído en el p.. |          1        0.81       30.08
+Invertidos en el predio y asistencia .. |          1        0.81       30.89
+Inviertieron en cercas vivas con árbo.. |          1        0.81       31.71
+Lo repartió entre los dueños de los p.. |          1        0.81       32.52
+             Mantenimiento de la finca. |          1        0.81       33.33
+Mantenimiento de la reserva. Cercado .. |          1        0.81       34.15
+Mejoras del predio en conservación, r.. |          1        0.81       34.96
+                           Pagar deudas |          1        0.81       35.77
+Pagar el impuesto de la finca y cerca.. |          1        0.81       36.59
+                        Pagar impuestos |          1        0.81       37.40
+Pagar impuestos, gastos del hogar y m.. |          1        0.81       38.21
+Pago del impuesto predio, vigilancia .. |          1        0.81       39.02
+                         Pago impuestos |          1        0.81       39.84
+Pago impuestos y para reparación del .. |          1        0.81       40.65
+       Pague finca raíz mandé a cercar. |          1        0.81       41.46
+ Para arreglar el predio en el cercado. |          1        0.81       42.28
+Para arreglar la veracidad para evita.. |          1        0.81       43.09
+Para arreglos de l finca, alambre, ce.. |          1        0.81       43.90
+               Para arregló de la finca |          1        0.81       44.72
+Para beneficio de la misma finca serc.. |          1        0.81       45.53
+ Para cercar el predio y para la valla. |          1        0.81       46.34
+                   Para cercar la finca |          2        1.63       47.97
+Para cercar un nacimiento y para rein.. |          1        0.81       48.78
+Para cercar y arreglar un pedazo de p.. |          1        0.81       49.59
+Para cercar, para la alimentación y p.. |          1        0.81       50.41
+Para cercar, para reforestacion del p.. |          1        0.81       51.22
+            Para comprar unos terneros. |          1        0.81       52.03
+Para cuidar el predio para que no le .. |          1        0.81       52.85
+                        Para el predial |          2        1.63       54.47
+Para el predial y para cercar la finca. |          1        0.81       55.28
+Para el predial y para gastos del dia.. |          1        0.81       56.10
+  Para el predial, impuestos y sustento |          1        0.81       56.91
+                       Para el sustento |          1        0.81       57.72
+Para el sustento y se cerco la finca .. |          1        0.81       58.54
+Para el sustento, para el pago de un .. |          1        0.81       59.35
+         Para encerramiento del predio. |          1        0.81       60.16
+Para gastos de mí madre y para cercar.. |          1        0.81       60.98
+                 Para gastos personales |          1        0.81       61.79
+    Para gastos personales y del predio |          1        0.81       62.60
+                Para gastos personales. |          1        0.81       63.41
+Para impuestos prediales, y reinversi.. |          1        0.81       64.23
+Para invertir en la finca en conserva.. |          1        0.81       65.04
+Para la esposa que estaba enferma y g.. |          1        0.81       65.85
+Para la misma finca se cerco para que.. |          1        0.81       66.67
+                        Para las deudas |          1        0.81       67.48
+Para limitar el predio en reserva, al.. |          1        0.81       68.29
+Para limpiar el predio y para el sust.. |          1        0.81       69.11
+Para los servicios de la casa y para .. |          1        0.81       69.92
+Para mano de obra en la finca, para r.. |          1        0.81       70.73
+        Para mantenimiento de la finca. |          1        0.81       71.54
+Para mejoras del predio, vayas y refo.. |          1        0.81       72.36
+Para pagar impuestos de la finca y me.. |          1        0.81       73.17
+Para pagar impuestos del predio y par.. |          1        0.81       73.98
+       Para pagar impuestos del predio. |          1        0.81       74.80
+Para pagar impuestos y otra parte par.. |          1        0.81       75.61
+Para ponernos al día con los impuesto.. |          1        0.81       76.42
+Para protegerse el mismo bosque que e.. |          1        0.81       77.24
+    Para recuperar otra área del predio |          1        0.81       78.05
+        Para reforestar la misma finca. |          1        0.81       78.86
+Para reinversión en l finca y gastos .. |          1        0.81       79.67
+Para reinversión en la finca, para ce.. |          1        0.81       80.49
+Para reinvertir en la finca y para ce.. |          1        0.81       81.30
+Para trabajar en las labores de la fi.. |          1        0.81       82.11
+Para árboles nativos y remplazar no n.. |          1        0.81       82.93
+Potencializar la parte productiva de .. |          1        0.81       83.74
+Principalmente para radicar el espino.. |          1        0.81       84.55
+                  Resiembra de Árboles. |          1        0.81       85.37
+Se compraron árboles y se arregló el .. |          1        0.81       86.18
+Se delimitó el predio con postes y fi.. |          1        0.81       86.99
+Se dividió entre los dueños para inve.. |          1        0.81       87.80
+Se invirtió en el mismo predio y para.. |          1        0.81       88.62
+Se invirtió en la finca,  mejoramient.. |          1        0.81       89.43
+       Se repartió entre los herederos. |          1        0.81       90.24
+Sembrar árboles en el predio y se enc.. |          1        0.81       91.06
+               Sembrar árboles nativos. |          1        0.81       91.87
+Sembrar árboles y conservación pagar .. |          1        0.81       92.68
+Siembra de arboles, pagar impuesto de.. |          1        0.81       93.50
+Sostenimiento para aislar la parte hí.. |          1        0.81       94.31
+Subsistencia pago del predial manteni.. |          1        0.81       95.12
+Sustento de la familia y pagar el imp.. |          1        0.81       95.93
+Toco devolverlo porque un hermano no .. |          1        0.81       96.75
+Toco poner vallas, cercas, solo fue p.. |          1        0.81       97.56
+     Varias cosas, distintos objetivos. |          1        0.81       98.37
+Viáticos de las reuniones Ubate, ya q.. |          1        0.81       99.19
+Árboles para el predio y alambrado pa.. |          1        0.81      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        123      100.00
+
+. tab Selection Fairness
+variable Selection not found
+r(111);
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. tabv selection_f
+command tabv is unrecognized
+r(199);
+
+. tab selection_f
+
+selection_f |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         19       15.45       15.45
+          2 |         19       15.45       30.89
+          3 |         24       19.51       50.41
+          4 |         41       33.33       83.74
+          5 |         20       16.26      100.00
+------------+-----------------------------------
+      Total |        123      100.00
+
+. tab selection_op
+
+                           selection_op |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+A quien se le da? Cuando es a funcion.. |          1        0.81        0.81
+A veces  se selecciona personas que n.. |          1        0.81        1.63
+Con l gente que conoce lenparece bien.. |          1        0.81        2.44
+Considero que mi predio está en un ár.. |          1        0.81        3.25
+Creo que los participantes del progra.. |          1        0.81        4.07
+De todas maneras hay gente que le pag.. |          1        0.81        4.88
+Debería cubrir a todas las personas q.. |          1        0.81        5.69
+Desconoce como eligen a los participa.. |          1        0.81        6.50
+Desconoce los criterios de selección .. |          1        0.81        7.32
+Desconozco la selección y participación |          1        0.81        8.13
+Desde que la cámara de comercio lo de.. |          1        0.81        8.94
+El enfoque está desviado, cuando se c.. |          1        0.81        9.76
+El go tierno debería dar un auxilio m.. |          1        0.81       10.57
+El proceso de selección lo hacen la C.. |          1        0.81       11.38
+      En lo que yo se lo hicieron bien. |          1        0.81       12.20
+                               Es buena |          1        0.81       13.01
+Es buena porque de verdad seleccionan.. |          1        0.81       13.82
+Es bueno porque esos terrenos estan a.. |          1        0.81       14.63
+Es bueno, de algo le sirve a uno, par.. |          1        0.81       15.45
+Es difícil  de opinar cuando no se pa.. |          1        0.81       16.26
+Es difícil conseguir personas para la.. |          1        0.81       17.07
+Es difícil de entender porque o todos.. |          1        0.81       17.89
+Es injusto por qué mí predio está jub.. |          1        0.81       18.70
+Es injusto porque realmente deberían .. |          1        0.81       19.51
+                           Es muy bueno |          1        0.81       20.33
+Es muy bueno que la gente la motiven .. |          1        0.81       21.14
+Escogen a los que más tienen monte pa.. |          1        0.81       21.95
+Eso fue bueno por qué escogieron pers.. |          1        0.81       22.76
+Esta bien pero que den los pagos de a.. |          1        0.81       23.58
+         Esta bien por ser propietarios |          1        0.81       24.39
+Esta muy bueno porque es un beneficio.. |          1        0.81       25.20
+Estoy en desacuerdo por qué el predio.. |          1        0.81       26.02
+Estuve en desacuerdo con unos temas, .. |          1        0.81       26.83
+Estuvo muy bien y claro el proceso de.. |          1        0.81       27.64
+Estuvo muy bien y que nos pagarán alg.. |          1        0.81       28.46
+   Está bien ingresaron los que fueron. |          1        0.81       29.27
+Está bien por a la protección del eco.. |          1        0.81       30.08
+Está de acuerdo con el proceso de sel.. |          1        0.81       30.89
+Está de acuerdo con que participen pr.. |          1        0.81       31.71
+Está muy bien que cuidan el agua, per.. |          1        0.81       32.52
+Está satisfecho con la selección ya q.. |          1        0.81       33.33
+Están escogiendo gente que tienen gra.. |          1        0.81       34.15
+                   Falta de información |          1        0.81       34.96
+        Falto divulgación del programa. |          1        0.81       35.77
+Fue a criterio de patrimonio nacional.. |          1        0.81       36.59
+                              Fue buena |          1        0.81       37.40
+Fue bueno por qué lograron cuidar eso.. |          1        0.81       38.21
+Fue muy buena la selección pero debie.. |          1        0.81       39.02
+Fue muy buena la verificación fue muy.. |          1        0.81       39.84
+Fue muy bueno y ayudó a preservar muc.. |          1        0.81       40.65
+Fue muy bueno, esperamos que mejore m.. |          1        0.81       41.46
+Fue muy bueno, por qué ayudó a muchas.. |          1        0.81       42.28
+Fue pura política, hay gente que en s.. |          1        0.81       43.09
+Fue una selección muy buena ya que la.. |          1        0.81       43.90
+Fueron bien escogidos con documentos .. |          1        0.81       44.72
+ Fueron bien escogidos por el programa. |          1        0.81       45.53
+Fué buena pero me entristece que no s.. |          1        0.81       46.34
+Hay descordinacion, inconsistencias e.. |          1        0.81       47.15
+Hay gente que verdaderamente cuida el.. |          1        0.81       47.97
+Hay que seleccionar los terrenos no l.. |          1        0.81       48.78
+Hubo muchas dudas, hay gente que se q.. |          1        0.81       49.59
+Influye mucho la política para dar pr.. |          1        0.81       50.41
+La ley debe ser para todos, el predio.. |          1        0.81       51.22
+La selección cumplió con los requerim.. |          1        0.81       52.03
+La selección fue justa. Y no tuvo que.. |          1        0.81       52.85
+        La verdad me pareció muy bueno. |          1        0.81       53.66
+Le gente que entra es gente que tiene.. |          1        0.81       54.47
+Le parece buena la selección de perso.. |          1        0.81       55.28
+Le parece bueno porque lo toman a uno.. |          1        0.81       56.10
+Le parece justo del cambio de pero lo.. |          1        0.81       56.91
+Le parece muy bien ya que los que est.. |          1        0.81       57.72
+Le parece muy bueno y el predio de no.. |          1        0.81       58.54
+        Le parece que fue muy acertado. |          1        0.81       59.35
+Le pareció buena la selección porque .. |          1        0.81       60.16
+Manta también es estratégico, nos dij.. |          1        0.81       60.98
+Me imagino que han hecho vosotros y q.. |          1        0.81       61.79
+Me parece que hay gente que necesita .. |          1        0.81       62.60
+Mi fica tiene agua y buen bosque, no .. |          1        0.81       63.41
+Muy apresurado y no siguió el program.. |          1        0.81       64.23
+Muy bien pero la gente está incómoda .. |          1        0.81       65.04
+Muy buena la selección y las visitas .. |          1        0.81       65.85
+ Muy bueno la idea es conservar bosque. |          1        0.81       66.67
+Ni me va ni me viene porque no se com.. |          1        0.81       67.48
+      No conozco cómo fue la selección. |          1        0.81       68.29
+No conozco ni criterios ni metodologí.. |          1        0.81       69.11
+No cree que se deba a seleccionar a n.. |          1        0.81       69.92
+No está muy enterado, ellos son los q.. |          1        0.81       70.73
+No me parece. Yo estaba en el program.. |          1        0.81       71.54
+No sabe  a ciencia cierta como hacen .. |          1        0.81       72.36
+No sabe a quienes los seleccionarán p.. |          1        0.81       73.17
+No sabe por qué salió del programa. N.. |          1        0.81       73.98
+No se como seleccionarán, esta mal po.. |          1        0.81       74.80
+No se los motivos, pero por voz a voz.. |          1        0.81       75.61
+No se que pensar que pensar, mi finca.. |          1        0.81       76.42
+No tiene conocimiento, su marido resp.. |          1        0.81       77.24
+    No tiene opinión sobre el programa. |          1        0.81       78.05
+Para mí que hay personas que con obli.. |          1        0.81       78.86
+Por lógica corpoguvio queda lejos de .. |          1        0.81       79.67
+Que debería haber llamado a los propi.. |          1        0.81       80.49
+Que debería hacer a más a conciencia .. |          1        0.81       81.30
+Que deberían seguir los mismos. ¿Quie.. |          1        0.81       82.11
+             Que están realizando bien. |          1        0.81       82.93
+Que fue bueno y entre más nos incenti.. |          1        0.81       83.74
+Que fue muy bueno por qué los que con.. |          1        0.81       84.55
+Que las fincas que están en protecció.. |          1        0.81       85.37
+Que las personas se benefician del pr.. |          1        0.81       86.18
+Que no debía ser así, por qué el pred.. |          1        0.81       86.99
+Que no le parece por qué debieron reu.. |          1        0.81       87.80
+Que se quedó corto, para la demanda d.. |          1        0.81       88.62
+Se ajustó en gran parte a las necesid.. |          1        0.81       89.43
+        Se benefició gente muy humilde. |          1        0.81       90.24
+Se debe bcer de buena fé, le extraña .. |          1        0.81       91.06
+Se debería abrir más espacio para per.. |          1        0.81       91.87
+Se debería apoyar más a los pequeños .. |          1        0.81       92.68
+Se debería selecciónar mejor los prop.. |          1        0.81       93.50
+Se debiera seguir el programa, hay mu.. |          1        0.81       94.31
+Se me hace bueno que se haya vuelto m.. |          1        0.81       95.12
+Se necesita ser más estructurada en e.. |          1        0.81       95.93
+Supone que no hay recursos para cubri.. |          1        0.81       96.75
+Sí seleccionaron a personas que tenía.. |          1        0.81       97.56
+Tienen que seleccionar a personas que.. |          1        0.81       98.37
+Todos somos merecedores de la program.. |          1        0.81       99.19
+Yo digo que bonito pero dijeron que c.. |          1        0.81      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        123      100.00
+
+. tab p_satisfaction
+
+p_satisfact |
+        ion |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         15       12.20       12.20
+          2 |         24       19.51       31.71
+          3 |         34       27.64       59.35
+          4 |         48       39.02       98.37
+          5 |          2        1.63      100.00
+------------+-----------------------------------
+      Total |        123      100.00
+
+. tab tropenbos_1
+
+                            tropenbos_1 |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                                      . |        180       95.24       95.24
+Ayudo a un sendero en la reserva de m.. |          1        0.53       95.77
+El señor Elías trabajó con tropembos .. |          1        0.53       96.30
+En una asociación de mujeres les come.. |          1        0.53       96.83
+Esta organización muestra la escasez .. |          1        0.53       97.35
+Organización en proceso de liquidació.. |          1        0.53       97.88
+Participó en un proyecto cultura camp.. |          1        0.53       98.41
+Por amigos que han trabajado en esto,.. |          1        0.53       98.94
+                       Por las noticias |          1        0.53       99.47
+Trabajan bosque y peces dirigido por .. |          1        0.53      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        189      100.00
+
+. tab regret_forest
+
+regret_fore |
+         st |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        0.99        0.99
+          2 |          4        1.97        2.96
+          3 |         25       12.32       15.27
+          4 |        172       84.73      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
