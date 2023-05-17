@@ -1,0 +1,1136 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/scripts/logs/2023.03.23-09.41.09.log.txt
+  log type:  text
+ opened on:  23 Mar 2023, 09:41:09
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time: 23 Mar 2023 09:41:09
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmatapath;lmatapostest;lmatapss;lmatasem;
+> lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensity and "xx yy zz%50" reduces transpar
+> ency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" ///
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" ///
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all other text
+. 
+. }
+
+. * -------------------------------------------------
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. clear
+
+. use "$working_ANALYSIS/processed/pes_ready.dta"
+
+. 
+. 
+. *--------------------------------------------------------------
+. * 1) ANALYSIS MAIN MANUSCRIPT
+. *--------------------------------------------------------------
+. **set globals
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size residence_farm
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. * where do pes members differ from non-members?
+. reg treated $socio_economic $trust_involvement $ngo_experience
+
+      Source |       SS           df       MS      Number of obs   =       203
+-------------+----------------------------------   F(19, 183)      =      2.05
+       Model |  8.49244598        19  .446970841   Prob > F        =    0.0083
+    Residual |  39.9804604       183  .218472461   R-squared       =    0.1752
+-------------+----------------------------------   Adj R-squared   =    0.0896
+       Total |  48.4729064       202  .239964883   Root MSE        =    .46741
+
+----------------------------------------------------------------------------------
+         treated |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+          female |   .2246328   .0835752     2.69   0.008     .0597378    .3895277
+          id_age |  -.0000957   .0026286    -0.04   0.971    -.0052819    .0050905
+     max_primary |   .0879094    .088647     0.99   0.323    -.0869923     .262811
+   income_hh_ppp |  -3.37e-06   .0000187    -0.18   0.857    -.0000403    .0000335
+         farms_n |   .0293272   .0286427     1.02   0.307    -.0271852    .0858396
+       land_size |   .0007558   .0004111     1.84   0.068    -.0000552    .0015669
+  residence_farm |  -.2107476   .0802071    -2.63   0.009    -.3689973   -.0524979
+    trust_people |   .0788589    .034654     2.28   0.024     .0104862    .1472316
+trust_townpeople |  -.0442181   .0338224    -1.31   0.193      -.11095    .0225138
+   trust_familiy |   .0250934   .0267194     0.94   0.349    -.0276243    .0778112
+      civicorg_d |   .0474762    .096116     0.49   0.622    -.1421618    .2371142
+ pruductiveorg_d |   .0033767   .0879757     0.04   0.969    -.1702005    .1769538
+        polspace |  -.0049705   .0365691    -0.14   0.892    -.0771217    .0671807
+never_collective |  -.2310811   .0803297    -2.88   0.004    -.3895725   -.0725897
+     tropenbos_d |  -.0170909   .1780226    -0.10   0.924    -.3683316    .3341498
+          gaia_d |   .0208534   .1096737     0.19   0.849    -.1955341    .2372409
+        omacha_d |    .028816   .2024628     0.14   0.887    -.3706456    .4282776
+         dononce |  -.2080665   .1257671    -1.65   0.100    -.4562065    .0400735
+         donmany |  -.0073381   .1145321    -0.06   0.949    -.2333114    .2186351
+           _cons |   .5325469   .2393319     2.23   0.027     .0603423    1.004752
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. psmatch2 treated  land_size residence_farm donatedbefore, n(1) common 
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(3)        =      21.39
+                                                Prob > chi2       =     0.0001
+Log likelihood = -125.42316                     Pseudo R2         =     0.0786
+
+--------------------------------------------------------------------------------
+       treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+     land_size |   .0090035   .0031285     2.88   0.004     .0028717    .0151353
+residence_farm |  -.3479662   .2016465    -1.73   0.084    -.7431861    .0472536
+ donatedbefore |  -.1084885   .2275962    -0.48   0.634    -.5545688    .3375918
+         _cons |   .2689545   .1930189     1.39   0.163    -.1093556    .6472647
+--------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. tab  _support _treated, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+  psmatch2: |  psmatch2: Treatment
+     Common |      assignment
+    support | Untreated    Treated |     Total
+------------+----------------------+----------
+Off support |         0          5 |         5 
+            |      0.00       4.07 |      2.46 
+------------+----------------------+----------
+ On support |        80        118 |       198 
+            |    100.00      95.93 |     97.54 
+------------+----------------------+----------
+      Total |        80        123 |       203 
+            |    100.00     100.00 |    100.00 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. * 5 (4%) treated participants are off common support
+. * gen matched pair identifier
+. gen pair = _id if _treated==0 
+(123 missing values generated)
+
+. replace pair = _n1 if _treated==1
+(118 real changes made)
+
+. bysort pair: egen paircount = count(pair)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair paircount {
+  2.                 rename `x'  matched`x'
+  3. }
+
+. replace matched_treated=. if matchedpaircount < 2
+(40 real changes made, 40 to missing)
+
+. tab matched_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         45       27.61       27.61
+    Treated |        118       72.39      100.00
+------------+-----------------------------------
+      Total |        163      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. * create inverse-probability of treatment weight (IPTW) to use as probability weight in regression to account for differences in treatment probability
+. gen     iptw = 1 / matched_pscore if treated==1
+(80 missing values generated)
+
+. replace iptw = 1 / (1 - matched_pscore) if treated==0
+(80 real changes made)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. gen untreated = 1-treated
+
+. psmatch2 untreated land_size residence_farm donatedbefore, n(1) common 
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(3)        =      21.39
+                                                Prob > chi2       =     0.0001
+Log likelihood = -125.42316                     Pseudo R2         =     0.0786
+
+--------------------------------------------------------------------------------
+     untreated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+     land_size |  -.0090035   .0031285    -2.88   0.004    -.0151353   -.0028717
+residence_farm |   .3479662   .2016465     1.73   0.084    -.0472536    .7431861
+ donatedbefore |   .1084885   .2275962     0.48   0.634    -.3375918    .5545688
+         _cons |  -.2689545   .1930189    -1.39   0.163    -.6472647    .1093556
+--------------------------------------------------------------------------------
+Note: 1 failure and 0 successes completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. tab  _support _treated, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+  psmatch2: |  psmatch2: Treatment
+     Common |      assignment
+    support | Untreated    Treated |     Total
+------------+----------------------+----------
+Off support |         0          1 |         1 
+            |      0.00       1.25 |      0.49 
+------------+----------------------+----------
+ On support |       123         79 |       202 
+            |    100.00      98.75 |     99.51 
+------------+----------------------+----------
+      Total |       123         80 |       203 
+            |    100.00     100.00 |    100.00 
+
+. * 1  (1%) of untreated participants are off common support
+. 
+. 
+. * gen matched pair identifier
+. gen pair_ATU = _id if _treated==0 
+(80 missing values generated)
+
+. replace pair_ATU = _n1 if _treated==1
+(79 real changes made)
+
+. bysort pair_ATU: egen paircount_ATU = count(pair_ATU)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair_ATU paircount_ATU {
+  2.                 rename `x'  matched_ATU`x'
+  3. }
+
+. replace matched_ATU_treated=. if matched_ATUpaircount_ATU < 2
+(81 real changes made, 81 to missing)
+
+. tab matched_ATU_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         43       35.25       35.25
+    Treated |         79       64.75      100.00
+------------+-----------------------------------
+      Total |        122      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience [fweight = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(21, 162)        =       9.95
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3888
+                                                Root MSE          =     5709.9
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   413.1225   1274.921     0.32   0.746    -2104.483    2930.728
+         group_3 |   2981.568   1261.426     2.36   0.019     490.6099    5472.526
+          female |   3494.197   1337.368     2.61   0.010     853.2754    6135.119
+          id_age |  -73.14856   40.27759    -1.82   0.071    -152.6854    6.388235
+     max_primary |   762.7053   1247.743     0.61   0.542    -1701.232    3226.643
+   income_hh_ppp |    1.00605   .1848537     5.44   0.000      .641016    1.371083
+         farms_n |   29.37232   462.7462     0.06   0.949    -884.4199    943.1645
+       land_size |   47.42522   19.98071     2.37   0.019     7.968999    86.88143
+  residence_farm |     555.57   1181.447     0.47   0.639    -1777.452    2888.592
+    trust_people |   112.6326    631.501     0.18   0.859    -1134.402    1359.668
+trust_townpeople |   836.8109   704.0862     1.19   0.236    -553.5592    2227.181
+   trust_familiy |   150.8531   366.9841     0.41   0.682    -573.8362    875.5424
+      civicorg_d |  -3007.181   1433.308    -2.10   0.037    -5837.556   -176.8058
+ pruductiveorg_d |    3721.51   1477.692     2.52   0.013     803.4888    6639.532
+        polspace |  -181.8119      589.8    -0.31   0.758    -1346.499    982.8755
+never_collective |  -886.7165    1107.41    -0.80   0.424    -3073.537    1300.104
+     tropenbos_d |   1217.447   2032.886     0.60   0.550    -2796.925    5231.818
+          gaia_d |   2643.883   1649.774     1.60   0.111    -613.9513    5901.717
+        omacha_d |   4658.108   2547.752     1.83   0.069    -372.9785    9689.194
+         dononce |  -1002.059   1524.967    -0.66   0.512    -4013.437    2009.318
+         donmany |  -963.0112   1546.022    -0.62   0.534    -4015.966    2089.943
+           _cons |   4182.898   3446.303     1.21   0.227     -2622.57    10988.37
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg donation_n $groups $socio_economic $trust_involvement $ngo_experience  [fweight = matched_ATU_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        158
+                                                F(21, 121)        =       7.78
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3985
+                                                Root MSE          =     6137.5
+
+                                       (Std. Err. adjusted for 122 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   3015.093   2080.029     1.45   0.150    -1102.873     7133.06
+         group_3 |   5682.292   1939.202     2.93   0.004      1843.13    9521.454
+          female |   593.3384   1673.419     0.35   0.724    -2719.635    3906.312
+          id_age |  -124.4175   52.18259    -2.38   0.019    -227.7267   -21.10829
+     max_primary |  -147.1495    1853.97    -0.08   0.937    -3817.572    3523.273
+   income_hh_ppp |   1.498212   .3128172     4.79   0.000     .8789076    2.117516
+         farms_n |  -401.7738   632.0697    -0.64   0.526    -1653.122    849.5748
+       land_size |   13.46099   25.14386     0.54   0.593    -36.31792     63.2399
+  residence_farm |   2151.441   1716.082     1.25   0.212    -1245.995    5548.877
+    trust_people |   556.7092   555.8301     1.00   0.319    -543.7031    1657.122
+trust_townpeople |  -733.1677   658.5091    -1.11   0.268     -2036.86    570.5248
+   trust_familiy |  -55.07299   463.4649    -0.12   0.906     -972.624     862.478
+      civicorg_d |  -1944.896   1315.721    -1.48   0.142    -4549.713    659.9217
+ pruductiveorg_d |   172.1277   2232.993     0.08   0.939     -4248.67    4592.926
+        polspace |   1413.385   641.8853     2.20   0.030     142.6033    2684.166
+never_collective |   1618.497   1461.152     1.11   0.270    -1274.239    4511.232
+     tropenbos_d |   2791.047   1921.972     1.45   0.149    -1014.004    6596.098
+          gaia_d |   2285.943   2659.279     0.86   0.392      -2978.8    7550.687
+        omacha_d |    2645.91   2672.245     0.99   0.324    -2644.504    7936.325
+         dononce |  -625.0973    1825.95    -0.34   0.733    -4240.047    2989.853
+         donmany |  -242.9129   2011.396    -0.12   0.904    -4225.003    3739.177
+           _cons |   6798.898   4024.751     1.69   0.094    -1169.159    14766.95
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. *internal motivation
+. reg motivation1 $groups $socio_economic $trust_involvement [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       1.13
+                                                Prob > F          =     0.3313
+                                                R-squared         =     0.1683
+                                                Root MSE          =     .37649
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation1 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.0115385    .063836    -0.18   0.857    -.1375964    .1145194
+         group_3 |    -.02135   .0819439    -0.26   0.795    -.1831659    .1404659
+          female |   .1167029   .0731438     1.60   0.113    -.0277353    .2611411
+          id_age |   .0053743   .0032794     1.64   0.103    -.0011016    .0118502
+     max_primary |  -.2239662   .1831401    -1.22   0.223    -.5856158    .1376834
+   income_hh_ppp |  -3.95e-06   .0000111    -0.36   0.722    -.0000258    .0000179
+         farms_n |  -.0578638   .0349829    -1.65   0.100     -.126945    .0112175
+       land_size |  -.0008259   .0011775    -0.70   0.484    -.0031511    .0014993
+  residence_farm |   .0816396   .1008237     0.81   0.419    -.1174585    .2807377
+    trust_people |  -.0213151   .0217938    -0.98   0.330    -.0643518    .0217215
+trust_townpeople |   .0363544   .0291416     1.25   0.214     -.021192    .0939008
+   trust_familiy |   .0365469   .0459479     0.80   0.428    -.0541872    .1272809
+      civicorg_d |  -.0317296   .0768594    -0.41   0.680    -.1835051    .1200459
+ pruductiveorg_d |   .0884496   .0796421     1.11   0.268    -.0688209    .2457202
+        polspace |  -.0318061   .0502078    -0.63   0.527    -.1309522    .0673399
+never_collective |  -.1773777   .0869905    -2.04   0.043    -.3491593   -.0055961
+           _cons |   3.669933   .2903967    12.64   0.000     3.096482    4.243383
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    1.35
+            Prob > F =    0.2321
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    1.77
+            Prob > F =    0.0970
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Internal") dec(2) replace
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *social motivation
+. reg motivation2 $groups $socio_economic $trust_involvement  [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       2.04
+                                                Prob > F          =     0.0135
+                                                R-squared         =     0.1481
+                                                Root MSE          =     .76235
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation2 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   .1583229   .1507438     1.05   0.295    -.1393533    .4559991
+         group_3 |  -.1370753   .1586471    -0.86   0.389    -.4503582    .1762076
+          female |  -.2650913   .1757531    -1.51   0.133    -.6121537    .0819712
+          id_age |  -.0001357   .0056847    -0.02   0.981    -.0113613    .0110899
+     max_primary |   .0047562   .2699029     0.02   0.986    -.5282254    .5377378
+   income_hh_ppp |   .0000122   .0000397     0.31   0.759    -.0000662    .0000907
+         farms_n |  -.0390265   .0555989    -0.70   0.484    -.1488185    .0707654
+       land_size |  -.0041462   .0016456    -2.52   0.013    -.0073958   -.0008967
+  residence_farm |   .0437821   .1727635     0.25   0.800    -.2973768     .384941
+    trust_people |   -.068124    .052878    -1.29   0.199    -.1725431     .036295
+trust_townpeople |   .1512151   .0599901     2.52   0.013     .0327517    .2696785
+   trust_familiy |  -.0424027   .0721783    -0.59   0.558    -.1849343    .1001288
+      civicorg_d |  -.1727026   .1948558    -0.89   0.377    -.5574873    .2120822
+ pruductiveorg_d |   .1154342   .1613052     0.72   0.475    -.2030977    .4339661
+        polspace |  -.0257423   .0837336    -0.31   0.759    -.1910924    .1396078
+never_collective |  -.1206912   .1645399    -0.73   0.464    -.4456107    .2042283
+           _cons |   3.597932    .515154     6.98   0.000      2.58065    4.615215
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    1.51
+            Prob > F =    0.1660
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    1.71
+            Prob > F =    0.1103
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Social"") dec(2) append
+unmatched quote
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg motivation1 $groups $socio_economic $trust_involvement [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       1.13
+                                                Prob > F          =     0.3313
+                                                R-squared         =     0.1683
+                                                Root MSE          =     .37649
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation1 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.0115385    .063836    -0.18   0.857    -.1375964    .1145194
+         group_3 |    -.02135   .0819439    -0.26   0.795    -.1831659    .1404659
+          female |   .1167029   .0731438     1.60   0.113    -.0277353    .2611411
+          id_age |   .0053743   .0032794     1.64   0.103    -.0011016    .0118502
+     max_primary |  -.2239662   .1831401    -1.22   0.223    -.5856158    .1376834
+   income_hh_ppp |  -3.95e-06   .0000111    -0.36   0.722    -.0000258    .0000179
+         farms_n |  -.0578638   .0349829    -1.65   0.100     -.126945    .0112175
+       land_size |  -.0008259   .0011775    -0.70   0.484    -.0031511    .0014993
+  residence_farm |   .0816396   .1008237     0.81   0.419    -.1174585    .2807377
+    trust_people |  -.0213151   .0217938    -0.98   0.330    -.0643518    .0217215
+trust_townpeople |   .0363544   .0291416     1.25   0.214     -.021192    .0939008
+   trust_familiy |   .0365469   .0459479     0.80   0.428    -.0541872    .1272809
+      civicorg_d |  -.0317296   .0768594    -0.41   0.680    -.1835051    .1200459
+ pruductiveorg_d |   .0884496   .0796421     1.11   0.268    -.0688209    .2457202
+        polspace |  -.0318061   .0502078    -0.63   0.527    -.1309522    .0673399
+never_collective |  -.1773777   .0869905    -2.04   0.043    -.3491593   -.0055961
+           _cons |   3.669933   .2903967    12.64   0.000     3.096482    4.243383
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    1.35
+            Prob > F =    0.2321
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    1.77
+            Prob > F =    0.0970
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Internal") dec(2) replace
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *social motivation
+. reg motivation2 $groups $socio_economic $trust_involvement  [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       2.04
+                                                Prob > F          =     0.0135
+                                                R-squared         =     0.1481
+                                                Root MSE          =     .76235
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation2 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |   .1583229   .1507438     1.05   0.295    -.1393533    .4559991
+         group_3 |  -.1370753   .1586471    -0.86   0.389    -.4503582    .1762076
+          female |  -.2650913   .1757531    -1.51   0.133    -.6121537    .0819712
+          id_age |  -.0001357   .0056847    -0.02   0.981    -.0113613    .0110899
+     max_primary |   .0047562   .2699029     0.02   0.986    -.5282254    .5377378
+   income_hh_ppp |   .0000122   .0000397     0.31   0.759    -.0000662    .0000907
+         farms_n |  -.0390265   .0555989    -0.70   0.484    -.1488185    .0707654
+       land_size |  -.0041462   .0016456    -2.52   0.013    -.0073958   -.0008967
+  residence_farm |   .0437821   .1727635     0.25   0.800    -.2973768     .384941
+    trust_people |   -.068124    .052878    -1.29   0.199    -.1725431     .036295
+trust_townpeople |   .1512151   .0599901     2.52   0.013     .0327517    .2696785
+   trust_familiy |  -.0424027   .0721783    -0.59   0.558    -.1849343    .1001288
+      civicorg_d |  -.1727026   .1948558    -0.89   0.377    -.5574873    .2120822
+ pruductiveorg_d |   .1154342   .1613052     0.72   0.475    -.2030977    .4339661
+        polspace |  -.0257423   .0837336    -0.31   0.759    -.1910924    .1396078
+never_collective |  -.1206912   .1645399    -0.73   0.464    -.4456107    .2042283
+           _cons |   3.597932    .515154     6.98   0.000      2.58065    4.615215
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    1.51
+            Prob > F =    0.1660
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    1.71
+            Prob > F =    0.1103
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Social") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *Money motivation
+. reg motivation3 $groups $socio_economic $trust_involvement [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       1.47
+                                                Prob > F          =     0.1164
+                                                R-squared         =     0.1709
+                                                Root MSE          =     .63358
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.0034444   .1169922    -0.03   0.977    -.2344708     .227582
+         group_3 |    .255194   .1317558     1.94   0.055    -.0049862    .5153742
+          female |  -.0916064   .1235186    -0.74   0.459    -.3355205    .1523077
+          id_age |   -.005873   .0046999    -1.25   0.213    -.0151539    .0034079
+     max_primary |   .5400485   .2553845     2.11   0.036     .0357366     1.04436
+   income_hh_ppp |   9.88e-06   .0000136     0.73   0.468     -.000017    .0000367
+         farms_n |   .0155889   .0372827     0.42   0.676    -.0580338    .0892117
+       land_size |   .0017467   .0015294     1.14   0.255    -.0012733    .0047667
+  residence_farm |   -.154543   .1467004    -1.05   0.294    -.4442347    .1351486
+    trust_people |   .0614123   .0446695     1.37   0.171    -.0267973    .1496218
+trust_townpeople |  -.0621044   .0495274    -1.25   0.212    -.1599068    .0356981
+   trust_familiy |  -.0258636   .0635072    -0.41   0.684    -.1512723     .099545
+      civicorg_d |   .1285594   .1550287     0.83   0.408    -.1775783     .434697
+ pruductiveorg_d |  -.0152284   .1185363    -0.13   0.898    -.2493039    .2188471
+        polspace |    .086781   .0695755     1.25   0.214    -.0506108    .2241729
+never_collective |   .1475917   .1200821     1.23   0.221    -.0895364    .3847197
+           _cons |   1.119101   .4089539     2.74   0.007     .3115334    1.926669
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    0.92
+            Prob > F =    0.4951
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    0.59
+            Prob > F =    0.7597
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Money") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *Fines motivation
+. reg motivation4 $groups $socio_economic $trust_involvement  [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       4.35
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3254
+                                                Root MSE          =     .93075
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation4 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.1004324   .2074182    -0.48   0.629    -.5100245    .3091597
+         group_3 |  -.2164569   .2025122    -1.07   0.287    -.6163608    .1834471
+          female |  -.3243426   .2035987    -1.59   0.113    -.7263922    .0777069
+          id_age |  -.0086366   .0082381    -1.05   0.296    -.0249045    .0076313
+     max_primary |   .4721102   .2680125     1.76   0.080    -.0571383    1.001359
+   income_hh_ppp |  -.0000529    .000032    -1.65   0.100    -.0001161    .0000103
+         farms_n |  -.0445942   .0635069    -0.70   0.484    -.1700023     .080814
+       land_size |   .0000873   .0020666     0.04   0.966    -.0039936    .0041681
+  residence_farm |   .1168241   .2015397     0.58   0.563    -.2811595    .5148076
+    trust_people |  -.0751264   .0973924    -0.77   0.442    -.2674486    .1171958
+trust_townpeople |   .1967162   .0939364     2.09   0.038     .0112185    .3822139
+   trust_familiy |   .1717665   .0725113     2.37   0.019     .0285773    .3149556
+      civicorg_d |   .1397573   .2702472     0.52   0.606    -.3939042    .6734187
+ pruductiveorg_d |   .2989674   .2157651     1.39   0.168    -.1271072    .7250421
+        polspace |   -.147934   .0883641    -1.67   0.096     -.322428    .0265599
+never_collective |   .4965572   .1995242     2.49   0.014     .1025536    .8905608
+           _cons |   1.509355   .5813219     2.60   0.010     .3614098    2.657301
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    3.61
+            Prob > F =    0.0012
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    2.52
+            Prob > F =    0.0174
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Fines") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *External LoC
+. reg motivation5 $groups $socio_economic $trust_involvement  [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       3.43
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2050
+                                                Root MSE          =     1.0443
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.0658641   .2553027    -0.26   0.797    -.5700144    .4382862
+         group_3 |  -.3069867   .2377393    -1.29   0.198    -.7764542    .1624808
+          female |  -.4312897   .2034773    -2.12   0.036    -.8330995   -.0294798
+          id_age |   .0178513   .0085932     2.08   0.039     .0008822    .0348204
+     max_primary |  -.1373619    .283161    -0.49   0.628    -.6965244    .4218007
+   income_hh_ppp |   7.79e-06   .0000323     0.24   0.810    -.0000561    .0000717
+         farms_n |   -.122454   .0944186    -1.30   0.197    -.3089038    .0639959
+       land_size |  -.0029918   .0028139    -1.06   0.289    -.0085486    .0025649
+  residence_farm |    .619096   .2087555     2.97   0.003     .2068633    1.031329
+    trust_people |   -.039466    .104457    -0.38   0.706    -.2457388    .1668068
+trust_townpeople |  -.0768919    .097003    -0.79   0.429    -.2684453    .1146614
+   trust_familiy |   .1347826     .08483     1.59   0.114    -.0327326    .3022977
+      civicorg_d |  -.0226206   .3067328    -0.07   0.941    -.6283308    .5830896
+ pruductiveorg_d |  -.1333468   .3031597    -0.44   0.661    -.7320011    .4653074
+        polspace |  -.1248094   .0996066    -1.25   0.212     -.321504    .0718853
+never_collective |  -.0435831    .273611    -0.16   0.874     -.583887    .4967208
+           _cons |   1.837695   .6732065     2.73   0.007     .5083032    3.167086
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    4.17
+            Prob > F =    0.0003
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    1.42
+            Prob > F =    0.1998
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("External LoC") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. *No point
+. reg motivation6 $groups $socio_economic $trust_involvement [fw = matched_weight], vce(cluster id)
+
+Linear regression                               Number of obs     =        236
+                                                F(16, 162)        =       0.50
+                                                Prob > F          =     0.9434
+                                                R-squared         =     0.1630
+                                                Root MSE          =     .42635
+
+                                       (Std. Err. adjusted for 163 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+     motivation6 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |  -.0764868   .0858941    -0.89   0.375    -.2461033    .0931297
+         group_3 |  -.1101782   .0874467    -1.26   0.210    -.2828606    .0625041
+          female |   .0056252   .1060418     0.05   0.958    -.2037773    .2150277
+          id_age |  -.0016558   .0040482    -0.41   0.683    -.0096499    .0063383
+     max_primary |   .3189978   .2525328     1.26   0.208    -.1796827    .8176783
+   income_hh_ppp |  -8.13e-06   9.36e-06    -0.87   0.386    -.0000266    .0000103
+         farms_n |  -.0227071   .0184939    -1.23   0.221    -.0592272     .013813
+       land_size |   .0014593   .0012119     1.20   0.230    -.0009339    .0038525
+  residence_farm |  -.0937747   .1315416    -0.71   0.477     -.353532    .1659826
+    trust_people |   .0087801   .0259181     0.34   0.735    -.0424008    .0599609
+trust_townpeople |  -.0372948   .0416483    -0.90   0.372    -.1195384    .0449487
+   trust_familiy |  -.0439615   .0625588    -0.70   0.483    -.1674974    .0795744
+      civicorg_d |   .0358014   .0731072     0.49   0.625    -.1085646    .1801674
+ pruductiveorg_d |  -.0706339    .066676    -1.06   0.291       -.2023    .0610323
+        polspace |   .0212926   .0696299     0.31   0.760    -.1162067     .158792
+never_collective |   .0942398   .0896845     1.05   0.295    -.0828616    .2713412
+           _cons |   1.316879   .3716953     3.54   0.001     .5828868    2.050872
+----------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   162) =    0.84
+            Prob > F =    0.5561
+
+. local F1 = r(p)
+
+. testparm $trust_involvement
+
+ ( 1)  trust_people = 0
+ ( 2)  trust_townpeople = 0
+ ( 3)  trust_familiy = 0
+ ( 4)  civicorg_d = 0
+ ( 5)  pruductiveorg_d = 0
+ ( 6)  polspace = 0
+ ( 7)  never_collective = 0
+
+       F(  7,   162) =    0.51
+            Prob > F =    0.8266
+
+. local F2 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS6_motivations_matched", addstat("Adjusted R-squared", e(r2_a), "Socio-economics", `F1', "Trust & Involvemen
+> t", `F2') adec(3) word ctitle("Amotivation") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf
+dir : seeout
+
+. 
+end of do-file
+
+. shellout using `"D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf"'
+
+. shellout using `"D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS6_motivations_matched.rtf"'
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. global balance female id_age max_primary income_hh_ppp farms_n land_size residence_farm econ_depend agricultor cattlemen merchant employee  othereconactivity  //
+> / socio-economics
+> civicorg_d pruductiveorg_d polspace collective_action never_collective  /// community involvement
+> trust_people trust_townpeople trust_familiy responsibility_gov  /// donation experience
+> tropenbos_d gaia_d omacha_d donnever dononce donmany
+
+. iebaltab $balance , grpvar(pes_participation) onerow  rowvarlabels save("$working_ANALYSIS/results/tables/TableS1_balancing") ftest fmissok replace
+    Balance table saved to: D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS1_balancing.xlsx
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg pes_participation $balance if pes_participation <3
+note: merchant omitted because of collinearity
+note: dononce omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       136
+-------------+----------------------------------   F(26, 109)      =      1.81
+       Model |  9.95056457        26  .382714022   Prob > F        =    0.0179
+    Residual |  22.9906119       109  .210923045   R-squared       =    0.3021
+-------------+----------------------------------   Adj R-squared   =    0.1356
+       Total |  32.9411765       135  .244008715   Root MSE        =    .45926
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |   .2966341   .1053963     2.81   0.006      .087742    .5055262
+            id_age |   .0060795   .0036794     1.65   0.101    -.0012129    .0133719
+       max_primary |  -.0394649   .1143331    -0.35   0.731    -.2660694    .1871395
+     income_hh_ppp |     .00002   .0000227     0.88   0.381     -.000025    .0000649
+           farms_n |  -.0383931   .0387826    -0.99   0.324    -.1152589    .0384728
+         land_size |   .0007555   .0004799     1.57   0.118    -.0001957    .0017066
+    residence_farm |  -.1898777    .107148    -1.77   0.079    -.4022416    .0224862
+       econ_depend |   .0501871   .0234718     2.14   0.035     .0036668    .0967074
+        agricultor |  -.2282873   .1850609    -1.23   0.220     -.595072    .1384975
+         cattlemen |  -.0101506   .1907602    -0.05   0.958    -.3882312    .3679299
+          merchant |          0  (omitted)
+          employee |   .0693124   .1885515     0.37   0.714    -.3043906    .4430154
+ othereconactivity |  -.2067396   .1781248    -1.16   0.248    -.5597771     .146298
+        civicorg_d |   .2037897   .1319125     1.54   0.125    -.0576567    .4652361
+   pruductiveorg_d |  -.1044194   .1194662    -0.87   0.384    -.3411975    .1323586
+          polspace |   .0041497   .0471252     0.09   0.930    -.0892508    .0975502
+ collective_action |     .01484   .0848853     0.17   0.862    -.1533998    .1830799
+  never_collective |  -.2482748   .1618854    -1.53   0.128    -.5691263    .0725768
+      trust_people |   .0525737   .0426067     1.23   0.220    -.0318713    .1370188
+  trust_townpeople |  -.0081605   .0431442    -0.19   0.850    -.0936709      .07735
+     trust_familiy |   .0340828     .03229     1.06   0.294    -.0299149    .0980806
+responsibility_gov |    -.01966   .0513901    -0.38   0.703    -.1215135    .0821935
+       tropenbos_d |   .1731859   .2093856     0.83   0.410    -.2418096    .5881813
+            gaia_d |   .0306622   .1424907     0.22   0.830    -.2517498    .3130742
+          omacha_d |  -.0823572   .2823989    -0.29   0.771    -.6420626    .4773483
+          donnever |   .4020476   .1750428     2.30   0.024     .0551185    .7489767
+           dononce |          0  (omitted)
+           donmany |   .1426899   .1874528     0.76   0.448    -.2288355    .5142154
+             _cons |    .675989    .432169     1.56   0.121    -.1805559    1.532534
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg pes_participation $balance if pes_participation !=2
+note: dononce omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       147
+-------------+----------------------------------   F(27, 119)      =      1.88
+       Model |  43.6336955        27   1.6160628   Prob > F        =    0.0111
+    Residual |  102.216645       119    .8589634   R-squared       =    0.2992
+-------------+----------------------------------   Adj R-squared   =    0.1402
+       Total |   145.85034       146  .998974932   Root MSE        =     .9268
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |   .5977102   .2120088     2.82   0.006     .1779116    1.017509
+            id_age |   .0011939   .0066462     0.18   0.858    -.0119662     .014354
+       max_primary |    .389924   .2380976     1.64   0.104    -.0815329     .861381
+     income_hh_ppp |  -.0000533   .0000468    -1.14   0.257    -.0001459    .0000394
+           farms_n |   .0884751   .0724552     1.22   0.224    -.0549934    .2319435
+         land_size |   .0043555   .0016135     2.70   0.008     .0011607    .0075504
+    residence_farm |  -.2963563   .2061453    -1.44   0.153    -.7045446    .1118319
+       econ_depend |   .0553752   .0449289     1.23   0.220    -.0335886     .144339
+        agricultor |  -1.632563   .7255007    -2.25   0.026    -3.069127   -.1959993
+         cattlemen |  -1.236745    .742148    -1.67   0.098    -2.706273    .2327818
+          merchant |  -1.442623   .8102535    -1.78   0.078    -3.047005    .1617604
+          employee |  -1.114492   .7422887    -1.50   0.136    -2.584298    .3553136
+ othereconactivity |  -1.277043   .7121862    -1.79   0.075    -2.687243     .133157
+        civicorg_d |   .0764109    .244081     0.31   0.755    -.4068937    .5597156
+   pruductiveorg_d |   .1413509   .2120306     0.67   0.506    -.2784908    .5611926
+          polspace |  -.0328715   .0947488    -0.35   0.729    -.2204835    .1547405
+ collective_action |  -.2504063   .1550327    -1.62   0.109    -.5573865     .056574
+  never_collective |  -.6730214   .3055624    -2.20   0.030    -1.278065   -.0679774
+      trust_people |   .1767361   .0844357     2.09   0.038     .0095449    .3439274
+  trust_townpeople |  -.0626623   .0803256    -0.78   0.437     -.221715    .0963904
+     trust_familiy |   .0618864   .0619359     1.00   0.320    -.0607528    .1845257
+responsibility_gov |   .0569756   .0987328     0.58   0.565    -.1385252    .2524763
+       tropenbos_d |  -.1361622   .4667341    -0.29   0.771    -1.060342    .7880179
+            gaia_d |  -.1778718    .275877    -0.64   0.520    -.7241359    .3683924
+          omacha_d |   .2798096   .4662484     0.60   0.550    -.6434087    1.203028
+          donnever |   .1982023   .2808415     0.71   0.482     -.357892    .7542965
+           dononce |          0  (omitted)
+           donmany |   .5166186   .3479444     1.48   0.140    -.1723461    1.205583
+             _cons |   2.654333   1.024981     2.59   0.011     .6247692    4.683897
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD4764_000000.tmp"
+
+. reg pes_participation $balance if pes_participation !=1
+note: dononce omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       123
+-------------+----------------------------------   F(27, 95)       =      0.98
+       Model |  6.63988033        27  .245921494   Prob > F        =    0.5044
+    Residual |  23.8641847        95  .251201944   R-squared       =    0.2177
+-------------+----------------------------------   Adj R-squared   =   -0.0047
+       Total |   30.504065       122   .25003332   Root MSE        =     .5012
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |  -.1165984   .1366809    -0.85   0.396    -.3879444    .1547476
+            id_age |  -.0082178   .0045765    -1.80   0.076    -.0173033    .0008677
+       max_primary |   .0608362   .1322928     0.46   0.647    -.2017983    .3234706
+     income_hh_ppp |  -.0000399   .0000329    -1.21   0.229    -.0001053    .0000255
+           farms_n |   .1217525   .0430397     2.83   0.006     .0363079    .2071971
+         land_size |    -.00067   .0004985    -1.34   0.182    -.0016597    .0003198
+    residence_farm |  -.0130533    .119215    -0.11   0.913    -.2497249    .2236183
+       econ_depend |  -.0249818   .0323514    -0.77   0.442    -.0892074    .0392439
+        agricultor |  -.5038171   .4057257    -1.24   0.217    -1.309284    .3016502
+         cattlemen |  -.4920277   .4172597    -1.18   0.241    -1.320393    .3363376
+          merchant |  -.6906856   .4259722    -1.62   0.108    -1.536347    .1549761
+          employee |   -.455309   .4018043    -1.13   0.260    -1.252991    .3423734
+ othereconactivity |   -.290648   .3966575    -0.73   0.466    -1.078113    .4968166
+        civicorg_d |  -.0029766   .1369803    -0.02   0.983    -.2749169    .2689637
+   pruductiveorg_d |   .1112756   .1253927     0.89   0.377    -.1376604    .3602116
+          polspace |  -.0014745   .0523234    -0.03   0.978    -.1053495    .1024005
+ collective_action |  -.0120921   .0929448    -0.13   0.897    -.1966109    .1724268
+  never_collective |   .1089916   .1772922     0.61   0.540    -.2429779    .4609611
+      trust_people |   .0728648   .0543071     1.34   0.183    -.0349484    .1806779
+  trust_townpeople |   -.027991   .0546921    -0.51   0.610    -.1365685    .0805865
+     trust_familiy |   -.028679   .0442971    -0.65   0.519    -.1166198    .0592618
+responsibility_gov |   .0417376   .0566838     0.74   0.463     -.070794    .1542693
+       tropenbos_d |   -.335857   .2695972    -1.25   0.216    -.8710751     .199361
+            gaia_d |  -.1457546   .1541191    -0.95   0.347    -.4517198    .1602105
+          omacha_d |   .3469937   .3061698     1.13   0.260    -.2608302    .9548175
+          donnever |  -.0682087   .1977491    -0.34   0.731    -.4607903    .3243728
+           dononce |          0  (omitted)
+           donmany |   .0264464   .2298156     0.12   0.909    -.4297952     .482688
+             _cons |    3.28868   .5955377     5.52   0.000     2.106389    4.470972
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. exit, clear

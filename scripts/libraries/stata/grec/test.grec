@@ -1,0 +1,83 @@
+StataFileTM:00001:01100:GREC:                          :
+00007:00007:00001:
+*! classname: combinegraph_g
+*! family: combine
+*! date: 15 Feb 2023
+*! time: 12:29:18
+*! graph_scheme: _GRSTYLE_
+*! naturallywhite: 1
+*! end
+
+// File created by Graph Editor Recorder.
+// Edit only if you know what you are doing.
+
+.plotregion1.graph2.AddTextBox added_text editor 90.48300259750228 11.45685167404734
+.plotregion1.graph2.added_text_new = 1
+.plotregion1.graph2.added_text_rec = 1
+.plotregion1.graph2.added_text[1].style.editstyle  angle(default) size( sztype(relative) val(2.777777777777778) allow_pct(1)) color(black) horizontal(left) vertical(middle) margin( gleft( sztype(relative) val(0) allow_pct(1)) gright( sztype(relative) val(0) allow_pct(1)) gtop( sztype(relative) val(0) allow_pct(1)) gbottom( sztype(relative) val(0) allow_pct(1))) linegap( sztype(relative) val(0) allow_pct(1)) drawbox(no) boxmargin( gleft( sztype(relative) val(0) allow_pct(1)) gright( sztype(relative) val(0) allow_pct(1)) gtop( sztype(relative) val(0) allow_pct(1)) gbottom( sztype(relative) val(0) allow_pct(1))) fillcolor(bluishgray) linestyle( width( sztype(relative) val(.15) allow_pct(1)) color(black) pattern(solid) align(inside)) box_alignment(east) editcopy
+.plotregion1.graph2.added_text[1].text = {}
+.plotregion1.graph2.added_text[1].text.Arrpush B: Bias reduction
+// editor text[1] edits
+
+.plotregion1.graph2.plotregion1.AddTextBox added_text editor 87.66236497123484 -22.4722991177886
+.plotregion1.graph2.plotregion1.added_text_new = 1
+.plotregion1.graph2.plotregion1.added_text_rec = 1
+.plotregion1.graph2.plotregion1.added_text[1].style.editstyle  angle(default) size( sztype(relative) val(2.777777777777778) allow_pct(1)) color(black) horizontal(left) vertical(middle) margin( gleft( sztype(relative) val(0) allow_pct(1)) gright( sztype(relative) val(0) allow_pct(1)) gtop( sztype(relative) val(0) allow_pct(1)) gbottom( sztype(relative) val(0) allow_pct(1))) linegap( sztype(relative) val(0) allow_pct(1)) drawbox(no) boxmargin( gleft( sztype(relative) val(0) allow_pct(1)) gright( sztype(relative) val(0) allow_pct(1)) gtop( sztype(relative) val(0) allow_pct(1)) gbottom( sztype(relative) val(0) allow_pct(1))) fillcolor(bluishgray) linestyle( width( sztype(relative) val(.15) allow_pct(1)) color(black) pattern(solid) align(inside)) box_alignment(east) editcopy
+.plotregion1.graph2.title.style.editstyle size(10-pt) editcopy
+.plotregion1.graph2.title.style.editstyle color(black) editcopy
+// title edits
+
+.plotregion1.graph2.title.text = {}
+.plotregion1.graph2.title.text.Arrpush B: Bias reduciton
+// graph2 edits
+
+.plotregion1.graph2.added_text[1].Delete
+// editor text[1] edits
+
+.plotregion1.graph2.title.style.editstyle horizontal(left) editcopy
+// title justification
+
+.plotregion1.graph2.title.style.editstyle horizontal(center) editcopy
+.plotregion1.graph2.title.style.editstyle box_alignment(nwest) editcopy
+// title edits
+
+.plotregion1.graph2.title.text = {}
+.plotregion1.graph2.title.text.Arrpush {bf:B} Bias reduciton
+// title edits
+
+// title edits
+
+.style.editstyle margin(tiny) editcopy
+// Graph margin
+
+.style.editstyle declared_ysize(2) editcopy
+.style.editstyle declared_xsize(3.165) editcopy
+// Graph size
+
+.plotregion1.graph2.title.style.editstyle size(8-pt) editcopy
+// title size
+
+.plotregion1.graph2.title.style.editstyle size(6-pt) editcopy
+// title size
+
+.plotregion1.graph1.title.style.editstyle size(6-pt) editcopy
+// title size
+
+.plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+.plotregion1.graph2.grpaxis.edit_tick 1 25 `"Number of farms"', tickset(major)
+// grpaxis edits
+
+.plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+.plotregion1.graph2.grpaxis.edit_tick 1 25 `"Number of farms"', tickset(major)
+// grpaxis edits
+
+.plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+.plotregion1.graph2.grpaxis.edit_tick 2 75 `"Size of farmland (in ha) "', tickset(major)
+// grpaxis edits
+
+.plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+.plotregion1.graph2.grpaxis.edit_tick 2 75 `"Size of farmland (in ha) "', tickset(major)
+// grpaxis edits
+
+
+// <end>

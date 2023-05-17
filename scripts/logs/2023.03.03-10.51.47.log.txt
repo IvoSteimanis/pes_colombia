@@ -1,0 +1,1495 @@
+------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/scripts/logs/2023.03.03-10.51.47.log.txt
+  log type:  text
+ opened on:   3 Mar 2023, 10:51:47
+
+. 
+. di "Begin date and time: $S_DATE $S_TIME"
+Begin date and time:  3 Mar 2023 10:51:47
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 16.1
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Nov 2020
+
+. di "Variant:       `=cond( c(MP),"MP",cond(c(SE),"SE",c(flavor)) )'"
+Variant:       MP
+
+. di "Processors:    `c(processors)'"
+Processors:    2
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. 
+. *   Analyses were run on Windows using Stata version 16
+. version 16              // Set Version number for backward compatibility
+
+. 
+. * All required Stata packages are available in the /libraries/stata folder
+. tokenize `"$S_ADO"', parse(";")
+
+. while `"`1'"' != "" {
+  2.   if `"`1'"'!="BASE" cap adopath - `"`1'"'
+  3.   macro shift
+  4. }
+
+. adopath ++ "$working_ANALYSIS/scripts/libraries/stata"
+  [1]              "D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/scripts/libraries/stata"
+  [2]  (BASE)      "C:\Program Files\Stata16\ado\base/"
+
+. mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmataerm;lmatafc;lmatagsem;lmatalasso;lmatamcmc;lmatameta;lmatami;lmatamixlog;lmatanumlib;lmataopt;lmat
+> apath;lmatapostest;lmatapss;lmatasem;lmatasp;lmatasvy;lmatatab;lcolrspace
+
+. sysdir set PERSONAL "$working_ANALYSIS/scripts/libraries/stata"
+
+. 
+. * Create directories for output files
+. cap mkdir "$working_ANALYSIS/processed"
+
+. cap mkdir "$working_ANALYSIS/results"
+
+. cap mkdir "$working_ANALYSIS/results/intermediate"
+
+. cap mkdir "$working_ANALYSIS/results/tables"
+
+. cap mkdir "$working_ANALYSIS/results/figures"
+
+. 
+. * Set general graph style
+. set scheme swift_red //select one scheme as reference scheme to work with
+
+. grstyle init 
+
+. {
+. *Background color
+. grstyle set color white: background plotregion graphregion legend box textbox //
+. 
+. *Main colors (note: swift_red only defines 8 colors. Multiplying the color, that is "xx yy zz*0.5" reduces/increases intensi
+> ty and "xx yy zz%50" reduces transparency)
+. grstyle set color       "100 143 255" "120 94 240" "220 38 127" "254 97 0" "255 176 0" /// 5 main colors
+>                                         "100 143 255*0.4" "120 94 240*0.4" "220 38 127*0.4" "254 97 0*0.4" "255 176 0*0.4" /
+> //
+>                                         "100 143 255*1.7" "120 94 240*1.7" "220 38 127*1.7" "254 97 0*1.7" "255 176 0*1.7" /
+> //
+>                                         : p# p#line p#lineplot p#bar p#area p#arealine p#pie histogram 
+. 
+. *Font size
+. grstyle set size 10pt: heading //titles
+. grstyle set size 8pt: subheading axis_title //axis titles
+. grstyle set size 8pt: p#label p#boxlabel body small_body text_option axis_label tick_label minortick_label key_label //all o
+> ther text
+. 
+. }
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. *--------------------------------------------------------------------
+. * SCRIPT: 02_analysis.do
+. * PURPOSE: replicates the tables and figures and saves the results
+. *--------------------------------------------------------------------
+. 
+. *--------------------------------------------------
+. * STRUCTURE OF THE DO-FILE
+. /*
+> 
+>         1) Analysis Main Manuscript
+>         2) Analysis Supplementary Online Materials
+> 
+> */
+. *--------------------------------------------------
+. * Load cleaned dataset
+. clear
+
+. use "$working_ANALYSIS/processed/pes_ready.dta"
+
+. 
+. 
+. *--------------------------------------------------------------
+. 
+end of do-file
+
+.  do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. global socio_economic female id_age max_primary income_hh_ppp farms_n land_size residence_farm
+
+. global trust_involvement trust_people trust_townpeople trust_familiy civicorg_d pruductiveorg_d polspace never_collective
+
+. global ngo_experience tropenbos_d gaia_d omacha_d dononce donmany
+
+. global groups group_2 group_3
+
+. 
+. 
+end of do-file
+
+.  do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. psmatch2 treated farms_n land_size, n(1) common
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(2)        =      18.41
+                                                Prob > chi2       =     0.0001
+Log likelihood = -126.91314                     Pseudo R2         =     0.0676
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0277608   .0761993     0.36   0.716    -.1215871    .1771087
+   land_size |   .0102198   .0030741     3.32   0.001     .0041946    .0162449
+       _cons |  -.0476736     .16286    -0.29   0.770    -.3668732    .2715261
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. psgraph, title("{bf:A } Common Support", span pos(11))
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. gr save "$working_ANALYSIS/results/intermediate/figureS1_A.gph", replace
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/intermediate/figureS1_A.gph saved)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.878   1.6125     20.7         |   1.42  0.157 |  1.27
+                       M  |  1.812    2.094    -22.0    -6.2 |  -1.42  0.158 |  0.53*
+                          |                                  |               |
+land_size              U  | 51.415   15.554     43.6         |   2.78  0.006 | 15.63*
+                       M  | 31.473   30.621      1.0    97.6 |   0.19  0.847 |  0.98
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.69; 1.44] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*  14.97*    50
+ Matched   | 0.007      2.21    0.331     11.5      11.5      19.2    0.51     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. pwcorr farms_n land_size
+
+             |  farms_n land_s~e
+-------------+------------------
+     farms_n |   1.0000 
+   land_size |   0.2839   1.0000 
+
+. tab knowsNGO
+
+   knowsNGO |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        170       83.74       83.74
+          1 |         33       16.26      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. global balance female id_age max_primary income_hh_ppp farms_n land_size residence_farm econ_depend agricultor cattlemen mer
+> chant employee  othereconactivity  /// socio-economics
+> civicorg_d pruductiveorg_d polspace collective_action never_collective  /// community involvement
+> trust_people trust_townpeople trust_familiy responsibility_gov  /// donation experience
+> tropenbos_1 gaia_1 omacha_d donnever dononce donmany
+
+. iebaltab $balance , grpvar(pes_participation) onerow  rowvarlabels save("$working_ANALYSIS/results/tables/TableS1_balancing"
+> ) ftest fmissok replace
+string variables not allowed in varlist;
+tropenbos_1 is a string variable
+r(109);
+
+end of do-file
+
+r(109);
+
+. tab donation_ngo
+
+Donation to |
+        NGO |      Freq.     Percent        Cum.
+------------+-----------------------------------
+      Never |        155       76.35       76.35
+       Once |         19        9.36       85.71
+ Many times |         29       14.29      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab dononce
+
+    dononce |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        184       90.64       90.64
+          1 |         19        9.36      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab donmany
+
+    donmany |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        174       85.71       85.71
+          1 |         29       14.29      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. global balance female id_age max_primary income_hh_ppp farms_n land_size residence_farm econ_depend agricultor cattlemen mer
+> chant employee  othereconactivity  /// socio-economics
+> civicorg_d pruductiveorg_d polspace collective_action never_collective  /// community involvement
+> trust_people trust_townpeople trust_familiy responsibility_gov  /// donation experience
+> tropenbos_d gaia_d omacha_d donnever dononce donmany
+
+. iebaltab $balance , grpvar(pes_participation) onerow  rowvarlabels save("$working_ANALYSIS/results/tables/TableS1_balancing"
+> ) ftest fmissok replace
+    Balance table saved to:
+        D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS1_balancing.xlsx
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg pes_participation $balance if pes_participation <3
+note: merchant omitted because of collinearity
+note: donmany omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       136
+-------------+----------------------------------   F(26, 109)      =      1.81
+       Model |  9.95056457        26  .382714022   Prob > F        =    0.0179
+    Residual |  22.9906119       109  .210923045   R-squared       =    0.3021
+-------------+----------------------------------   Adj R-squared   =    0.1356
+       Total |  32.9411765       135  .244008715   Root MSE        =    .45926
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |   .2966341   .1053963     2.81   0.006      .087742    .5055262
+            id_age |   .0060795   .0036794     1.65   0.101    -.0012129    .0133719
+       max_primary |  -.0394649   .1143331    -0.35   0.731    -.2660694    .1871395
+     income_hh_ppp |     .00002   .0000227     0.88   0.381     -.000025    .0000649
+           farms_n |  -.0383931   .0387826    -0.99   0.324    -.1152589    .0384728
+         land_size |   .0007555   .0004799     1.57   0.118    -.0001957    .0017066
+    residence_farm |  -.1898777    .107148    -1.77   0.079    -.4022416    .0224862
+       econ_depend |   .0501871   .0234718     2.14   0.035     .0036668    .0967074
+        agricultor |  -.2282873   .1850609    -1.23   0.220     -.595072    .1384975
+         cattlemen |  -.0101506   .1907602    -0.05   0.958    -.3882312    .3679299
+          merchant |          0  (omitted)
+          employee |   .0693124   .1885515     0.37   0.714    -.3043906    .4430154
+ othereconactivity |  -.2067396   .1781248    -1.16   0.248    -.5597771     .146298
+        civicorg_d |   .2037897   .1319125     1.54   0.125    -.0576567    .4652361
+   pruductiveorg_d |  -.1044194   .1194662    -0.87   0.384    -.3411975    .1323586
+          polspace |   .0041497   .0471252     0.09   0.930    -.0892508    .0975502
+ collective_action |     .01484   .0848853     0.17   0.862    -.1533998    .1830799
+  never_collective |  -.2482748   .1618854    -1.53   0.128    -.5691263    .0725768
+      trust_people |   .0525737   .0426067     1.23   0.220    -.0318713    .1370188
+  trust_townpeople |  -.0081605   .0431442    -0.19   0.850    -.0936709      .07735
+     trust_familiy |   .0340828     .03229     1.06   0.294    -.0299149    .0980806
+responsibility_gov |    -.01966   .0513901    -0.38   0.703    -.1215135    .0821935
+       tropenbos_d |   .1731859   .2093856     0.83   0.410    -.2418096    .5881813
+            gaia_d |   .0306622   .1424907     0.22   0.830    -.2517498    .3130742
+          omacha_d |  -.0823572   .2823989    -0.29   0.771    -.6420626    .4773483
+          donnever |   .2593576   .1762685     1.47   0.144    -.0900009    .6087161
+           dononce |  -.1426899   .1874528    -0.76   0.448    -.5142154    .2288355
+           donmany |          0  (omitted)
+             _cons |   .8186789   .4397415     1.86   0.065    -.0528744    1.690232
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. tab donnever dononce
+
+           |        dononce
+  donnever |         0          1 |     Total
+-----------+----------------------+----------
+         0 |        29         19 |        48 
+         1 |       155          0 |       155 
+-----------+----------------------+----------
+     Total |       184         19 |       203 
+
+. tab donmany
+
+    donmany |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        174       85.71       85.71
+          1 |         29       14.29      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg donation_n $groups $trust_involvement, vce(hc3)
+
+Linear regression                               Number of obs     =        203
+                                                F(9, 193)         =       2.99
+                                                Prob > F          =     0.0023
+                                                R-squared         =     0.1108
+                                                Root MSE          =       6918
+
+----------------------------------------------------------------------------------
+                 |             Robust HC3
+      donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+         group_2 |    1854.71   1162.935     1.59   0.112    -438.9829    4148.403
+         group_3 |   4026.215   1192.576     3.38   0.001      1674.06    6378.371
+    trust_people |    451.764   504.1295     0.90   0.371    -542.5466    1446.075
+trust_townpeople |   31.90162   502.8571     0.06   0.949    -959.8994    1023.703
+   trust_familiy |  -698.3121   362.1119    -1.93   0.055    -1412.517    15.89255
+      civicorg_d |  -876.2958   1375.119    -0.64   0.525    -3588.487    1835.895
+ pruductiveorg_d |   2296.902   1375.963     1.67   0.097    -416.9541    5010.758
+        polspace |    260.535   535.5279     0.49   0.627    -795.7036    1316.774
+never_collective |   544.8494   1101.922     0.49   0.622    -1628.506    2718.205
+           _cons |   6685.508   2521.616     2.65   0.009     1712.045    11658.97
+----------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. tab collective_action
+
+  collective_action |      Freq.     Percent        Cum.
+--------------------+-----------------------------------
+              Never |         94       46.31       46.31
+Couple times a year |         68       33.50       79.80
+       Once a month |         25       12.32       92.12
+        Once a week |         15        7.39       99.51
+           Everyday |          1        0.49      100.00
+--------------------+-----------------------------------
+              Total |        203      100.00
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg pes_participation $balance if pes_participation <3
+note: merchant omitted because of collinearity
+note: donmany omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       136
+-------------+----------------------------------   F(26, 109)      =      1.81
+       Model |  9.95056457        26  .382714022   Prob > F        =    0.0179
+    Residual |  22.9906119       109  .210923045   R-squared       =    0.3021
+-------------+----------------------------------   Adj R-squared   =    0.1356
+       Total |  32.9411765       135  .244008715   Root MSE        =    .45926
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |   .2966341   .1053963     2.81   0.006      .087742    .5055262
+            id_age |   .0060795   .0036794     1.65   0.101    -.0012129    .0133719
+       max_primary |  -.0394649   .1143331    -0.35   0.731    -.2660694    .1871395
+     income_hh_ppp |     .00002   .0000227     0.88   0.381     -.000025    .0000649
+           farms_n |  -.0383931   .0387826    -0.99   0.324    -.1152589    .0384728
+         land_size |   .0007555   .0004799     1.57   0.118    -.0001957    .0017066
+    residence_farm |  -.1898777    .107148    -1.77   0.079    -.4022416    .0224862
+       econ_depend |   .0501871   .0234718     2.14   0.035     .0036668    .0967074
+        agricultor |  -.2282873   .1850609    -1.23   0.220     -.595072    .1384975
+         cattlemen |  -.0101506   .1907602    -0.05   0.958    -.3882312    .3679299
+          merchant |          0  (omitted)
+          employee |   .0693124   .1885515     0.37   0.714    -.3043906    .4430154
+ othereconactivity |  -.2067396   .1781248    -1.16   0.248    -.5597771     .146298
+        civicorg_d |   .2037897   .1319125     1.54   0.125    -.0576567    .4652361
+   pruductiveorg_d |  -.1044194   .1194662    -0.87   0.384    -.3411975    .1323586
+          polspace |   .0041497   .0471252     0.09   0.930    -.0892508    .0975502
+ collective_action |     .01484   .0848853     0.17   0.862    -.1533998    .1830799
+  never_collective |  -.2482748   .1618854    -1.53   0.128    -.5691263    .0725768
+      trust_people |   .0525737   .0426067     1.23   0.220    -.0318713    .1370188
+  trust_townpeople |  -.0081605   .0431442    -0.19   0.850    -.0936709      .07735
+     trust_familiy |   .0340828     .03229     1.06   0.294    -.0299149    .0980806
+responsibility_gov |    -.01966   .0513901    -0.38   0.703    -.1215135    .0821935
+       tropenbos_d |   .1731859   .2093856     0.83   0.410    -.2418096    .5881813
+            gaia_d |   .0306622   .1424907     0.22   0.830    -.2517498    .3130742
+          omacha_d |  -.0823572   .2823989    -0.29   0.771    -.6420626    .4773483
+          donnever |   .2593576   .1762685     1.47   0.144    -.0900009    .6087161
+           dononce |  -.1426899   .1874528    -0.76   0.448    -.5142154    .2288355
+           donmany |          0  (omitted)
+             _cons |   .8186789   .4397415     1.86   0.065    -.0528744    1.690232
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg pes_participation $balance if pes_participation !=2
+note: dononce omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       147
+-------------+----------------------------------   F(27, 119)      =      1.88
+       Model |  43.6336955        27   1.6160628   Prob > F        =    0.0111
+    Residual |  102.216645       119    .8589634   R-squared       =    0.2992
+-------------+----------------------------------   Adj R-squared   =    0.1402
+       Total |   145.85034       146  .998974932   Root MSE        =     .9268
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |   .5977102   .2120088     2.82   0.006     .1779116    1.017509
+            id_age |   .0011939   .0066462     0.18   0.858    -.0119662     .014354
+       max_primary |    .389924   .2380976     1.64   0.104    -.0815329     .861381
+     income_hh_ppp |  -.0000533   .0000468    -1.14   0.257    -.0001459    .0000394
+           farms_n |   .0884751   .0724552     1.22   0.224    -.0549934    .2319435
+         land_size |   .0043555   .0016135     2.70   0.008     .0011607    .0075504
+    residence_farm |  -.2963563   .2061453    -1.44   0.153    -.7045446    .1118319
+       econ_depend |   .0553752   .0449289     1.23   0.220    -.0335886     .144339
+        agricultor |  -1.632563   .7255007    -2.25   0.026    -3.069127   -.1959993
+         cattlemen |  -1.236745    .742148    -1.67   0.098    -2.706273    .2327818
+          merchant |  -1.442623   .8102535    -1.78   0.078    -3.047005    .1617604
+          employee |  -1.114492   .7422887    -1.50   0.136    -2.584298    .3553136
+ othereconactivity |  -1.277043   .7121862    -1.79   0.075    -2.687243     .133157
+        civicorg_d |   .0764109    .244081     0.31   0.755    -.4068937    .5597156
+   pruductiveorg_d |   .1413509   .2120306     0.67   0.506    -.2784908    .5611926
+          polspace |  -.0328715   .0947488    -0.35   0.729    -.2204835    .1547405
+ collective_action |  -.2504063   .1550327    -1.62   0.109    -.5573865     .056574
+  never_collective |  -.6730214   .3055624    -2.20   0.030    -1.278065   -.0679774
+      trust_people |   .1767361   .0844357     2.09   0.038     .0095449    .3439274
+  trust_townpeople |  -.0626623   .0803256    -0.78   0.437     -.221715    .0963904
+     trust_familiy |   .0618864   .0619359     1.00   0.320    -.0607528    .1845257
+responsibility_gov |   .0569756   .0987328     0.58   0.565    -.1385252    .2524763
+       tropenbos_d |  -.1361622   .4667341    -0.29   0.771    -1.060342    .7880179
+            gaia_d |  -.1778718    .275877    -0.64   0.520    -.7241359    .3683924
+          omacha_d |   .2798096   .4662484     0.60   0.550    -.6434087    1.203028
+          donnever |   .1982023   .2808415     0.71   0.482     -.357892    .7542965
+           dononce |          0  (omitted)
+           donmany |   .5166186   .3479444     1.48   0.140    -.1723461    1.205583
+             _cons |   2.654333   1.024981     2.59   0.011     .6247692    4.683897
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg pes_participation $balance if pes_participation !=1
+note: dononce omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       123
+-------------+----------------------------------   F(27, 95)       =      0.98
+       Model |  6.63988033        27  .245921494   Prob > F        =    0.5044
+    Residual |  23.8641847        95  .251201944   R-squared       =    0.2177
+-------------+----------------------------------   Adj R-squared   =   -0.0047
+       Total |   30.504065       122   .25003332   Root MSE        =     .5012
+
+------------------------------------------------------------------------------------
+ pes_participation |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------+----------------------------------------------------------------
+            female |  -.1165984   .1366809    -0.85   0.396    -.3879444    .1547476
+            id_age |  -.0082178   .0045765    -1.80   0.076    -.0173033    .0008677
+       max_primary |   .0608362   .1322928     0.46   0.647    -.2017983    .3234706
+     income_hh_ppp |  -.0000399   .0000329    -1.21   0.229    -.0001053    .0000255
+           farms_n |   .1217525   .0430397     2.83   0.006     .0363079    .2071971
+         land_size |    -.00067   .0004985    -1.34   0.182    -.0016597    .0003198
+    residence_farm |  -.0130533    .119215    -0.11   0.913    -.2497249    .2236183
+       econ_depend |  -.0249818   .0323514    -0.77   0.442    -.0892074    .0392439
+        agricultor |  -.5038171   .4057257    -1.24   0.217    -1.309284    .3016502
+         cattlemen |  -.4920277   .4172597    -1.18   0.241    -1.320393    .3363376
+          merchant |  -.6906856   .4259722    -1.62   0.108    -1.536347    .1549761
+          employee |   -.455309   .4018043    -1.13   0.260    -1.252991    .3423734
+ othereconactivity |   -.290648   .3966575    -0.73   0.466    -1.078113    .4968166
+        civicorg_d |  -.0029766   .1369803    -0.02   0.983    -.2749169    .2689637
+   pruductiveorg_d |   .1112756   .1253927     0.89   0.377    -.1376604    .3602116
+          polspace |  -.0014745   .0523234    -0.03   0.978    -.1053495    .1024005
+ collective_action |  -.0120921   .0929448    -0.13   0.897    -.1966109    .1724268
+  never_collective |   .1089916   .1772922     0.61   0.540    -.2429779    .4609611
+      trust_people |   .0728648   .0543071     1.34   0.183    -.0349484    .1806779
+  trust_townpeople |   -.027991   .0546921    -0.51   0.610    -.1365685    .0805865
+     trust_familiy |   -.028679   .0442971    -0.65   0.519    -.1166198    .0592618
+responsibility_gov |   .0417376   .0566838     0.74   0.463     -.070794    .1542693
+       tropenbos_d |   -.335857   .2695972    -1.25   0.216    -.8710751     .199361
+            gaia_d |  -.1457546   .1541191    -0.95   0.347    -.4517198    .1602105
+          omacha_d |   .3469937   .3061698     1.13   0.260    -.2608302    .9548175
+          donnever |  -.0682087   .1977491    -0.34   0.731    -.4607903    .3243728
+           dononce |          0  (omitted)
+           donmany |   .0264464   .2298156     0.12   0.909    -.4297952     .482688
+             _cons |    3.28868   .5955377     5.52   0.000     2.106389    4.470972
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.878   1.6125     20.7         |   1.42  0.157 |  1.27
+                       M  |  1.812    2.094    -22.0    -6.2 |  -1.42  0.158 |  0.53*
+                          |                                  |               |
+land_size              U  | 51.415   15.554     43.6         |   2.78  0.006 | 15.63*
+                       M  | 31.473   30.621      1.0    97.6 |   0.19  0.847 |  0.98
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.69; 1.44] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*  14.97*    50
+ Matched   | 0.007      2.21    0.331     11.5      11.5      19.2    0.51     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.878   1.6125     20.7         |   1.42  0.157 |  1.27
+                       M  |  1.812    2.094    -22.0    -6.2 |  -1.42  0.158 |  0.53*
+                          |                                  |               |
+land_size              U  | 51.415   15.554     43.6         |   2.78  0.006 | 15.63*
+                       M  | 31.473   30.621      1.0    97.6 |   0.19  0.847 |  0.98
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.69; 1.44] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*  14.97*    50
+ Matched   | 0.007      2.21    0.331     11.5      11.5      19.2    0.51     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. gr save "$working_ANALYSIS/results/intermediate/figureS1_B.gph", replace
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/intermediate/figureS1_B.gph saved)
+
+. gr combine "$working_ANALYSIS/results/intermediate/figureS1_A.gph" "$working_ANALYSIS/results/intermediate/figureS1_B.gph", 
+> rows(1)
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. ze(2) editcopy
+command ze is unrecognized
+r(199);
+
+end of do-file
+
+r(199);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. gr_edit plotregion1.graph2.title.text = {}
+
+. gr_edit plotregion1.graph2.title.text.Arrpush {bf: B} Bias reduction
+
+. gr_edit plotregion1.graph2.title.style.editstyle box_alignment(nwest) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr_edit style.editstyle declared_ysize(2) editcopy
+
+. gr_edit style.editstyle declared_xsize(3.165) editcopy
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 1 25 `"Size of farmland (in ha)"', tickset(major)
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 2 75 `"Number of farms"', tickset(major)
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 2 75 `"Number of farms"', tickset(major)
+
+. gr export "$working_ANALYSIS/results/figures/figureS1_matching_ATT.tif", replace width(3465)
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/figures/figureS1_matching_ATT.tif written in T
+> IFF format)
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab _n1 _support
+
+ psmatch2: |
+     ID of | psmatch2:
+   nearest |   Common
+  neighbor |  support
+     nr. 1 | On suppor |     Total
+-----------+-----------+----------
+         2 |         1 |         1 
+         5 |         1 |         1 
+         8 |         1 |         1 
+        15 |         1 |         1 
+        17 |         1 |         1 
+        22 |         1 |         1 
+        32 |         2 |         2 
+        34 |         3 |         3 
+        38 |         4 |         4 
+        39 |         5 |         5 
+        41 |         1 |         1 
+        42 |         5 |         5 
+        43 |         2 |         2 
+        44 |         2 |         2 
+        45 |         1 |         1 
+        48 |         1 |         1 
+        49 |         2 |         2 
+        50 |         4 |         4 
+        51 |         3 |         3 
+        52 |         2 |         2 
+        53 |         4 |         4 
+        55 |         1 |         1 
+        56 |         1 |         1 
+        58 |         1 |         1 
+        59 |         1 |         1 
+        60 |         1 |         1 
+        62 |         3 |         3 
+        63 |         3 |         3 
+        64 |         2 |         2 
+        65 |         8 |         8 
+        66 |         1 |         1 
+        67 |         1 |         1 
+        68 |         4 |         4 
+        69 |         1 |         1 
+        70 |         6 |         6 
+        71 |         1 |         1 
+        72 |         4 |         4 
+        73 |         2 |         2 
+        74 |         3 |         3 
+        75 |         5 |         5 
+        76 |         8 |         8 
+        77 |         2 |         2 
+        78 |         6 |         6 
+        79 |         4 |         4 
+        80 |         1 |         1 
+-----------+-----------+----------
+     Total |       117 |       117 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab _treated _support
+
+ psmatch2: |   psmatch2: Common
+ Treatment |        support
+assignment | Off suppo  On suppor |     Total
+-----------+----------------------+----------
+ Untreated |         0         80 |        80 
+   Treated |         6        117 |       123 
+-----------+----------------------+----------
+     Total |         6        197 |       203 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab _treated _support, row
+
++----------------+
+| Key            |
+|----------------|
+|   frequency    |
+| row percentage |
++----------------+
+
+ psmatch2: |   psmatch2: Common
+ Treatment |        support
+assignment | Off suppo  On suppor |     Total
+-----------+----------------------+----------
+ Untreated |         0         80 |        80 
+           |      0.00     100.00 |    100.00 
+-----------+----------------------+----------
+   Treated |         6        117 |       123 
+           |      4.88      95.12 |    100.00 
+-----------+----------------------+----------
+     Total |         6        197 |       203 
+           |      2.96      97.04 |    100.00 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab _treated _support, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+ psmatch2: |   psmatch2: Common
+ Treatment |        support
+assignment | Off suppo  On suppor |     Total
+-----------+----------------------+----------
+ Untreated |         0         80 |        80 
+           |      0.00      40.61 |     39.41 
+-----------+----------------------+----------
+   Treated |         6        117 |       123 
+           |    100.00      59.39 |     60.59 
+-----------+----------------------+----------
+     Total |         6        197 |       203 
+           |    100.00     100.00 |    100.00 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab  _support _treated, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+  psmatch2: |  psmatch2: Treatment
+     Common |      assignment
+    support | Untreated    Treated |     Total
+------------+----------------------+----------
+Off support |         0          6 |         6 
+            |      0.00       4.88 |      2.96 
+------------+----------------------+----------
+ On support |        80        117 |       197 
+            |    100.00      95.12 |     97.04 
+------------+----------------------+----------
+      Total |        80        123 |       203 
+            |    100.00     100.00 |    100.00 
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. replace pair = _n1 if _treated==1
+variable pair not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. * gen matched pair identifier
+. gen pair = _id if _treated==0 
+(123 missing values generated)
+
+. replace pair = _n1 if _treated==1
+(117 real changes made)
+
+. bysort pair: egen paircount = count(pair)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair paircount {
+  2.                 rename `x'  matched`x'
+  3. }
+
+. replace matched_treated=. if matchedpaircount < 2
+(41 real changes made, 41 to missing)
+
+. tab matched_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         45       27.78       27.78
+    Treated |        117       72.22      100.00
+------------+-----------------------------------
+      Total |        162      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. * create inverse-probability of treatment weight (IPTW) to use as probability weight in regression to account for difference
+> s in treatment probability
+. gen     iptw = 1 / matched_pscore if treated==1
+(80 missing values generated)
+
+. replace iptw = 1 / (1 - matched_pscore) if treated==0
+(80 real changes made)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. gen untreated = 1-treated
+
+. psmatch2 untreated farms_n land_size,  n(1) common
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(2)        =      18.41
+                                                Prob > chi2       =     0.0001
+Log likelihood = -126.91314                     Pseudo R2         =     0.0676
+
+------------------------------------------------------------------------------
+   untreated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |  -.0277608   .0761993    -0.36   0.716    -.1771087    .1215871
+   land_size |  -.0102198   .0030741    -3.32   0.001    -.0162449   -.0041946
+       _cons |   .0476736     .16286     0.29   0.770    -.2715261    .3668732
+------------------------------------------------------------------------------
+Note: 1 failure and 0 successes completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. psgraph, title("{bf:A } Common Support", span pos(11))
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. gr save "$working_ANALYSIS/results/intermediate/figureS2_A.gph", replace
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/intermediate/figureS2_A.gph saved)
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  | 1.6125    1.878    -20.7         |  -1.42  0.157 |  0.79
+                       M  | 1.6203   1.3291     22.7    -9.6 |   1.68  0.094 |  1.65*
+                          |                                  |               |
+land_size              U  | 15.554   51.415    -43.6         |  -2.78  0.006 |  0.06*
+                       M  |  15.75   16.876     -1.4    96.9 |  -0.24  0.814 |  0.84
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.64; 1.56] for U and [0.64; 1.56] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*   0.07*    50
+ Matched   | 0.015      3.23    0.199     12.0      12.0      28.0*   1.47     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. gr save "$working_ANALYSIS/results/intermediate/figureS2_B.gph", replace
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/intermediate/figureS2_B.gph saved)
+
+. gr combine "$working_ANALYSIS/results/intermediate/figureS2_A.gph" "$working_ANALYSIS/results/intermediate/figureS2_B.gph", 
+> rows(1)
+(note:  named style medthin not found in class linestyle, default attributes used)
+(note:  named style medthin not found in class linestyle, default attributes used)
+
+. gr_edit plotregion1.graph1.plotregion1.plot2.style.editstyle area(shadestyle(color("100 143 255"))) editcopy
+
+. gr_edit plotregion1.graph1.plotregion1.plot1.style.editstyle area(shadestyle(color("120 94 225"))) editcopy
+
+. gr_edit plotregion1.graph1.legend.plotregion1.label[1].text = {}
+
+. gr_edit plotregion1.graph1.legend.plotregion1.label[1].text.Arrpush Treated
+
+. gr_edit plotregion1.graph1.legend.plotregion1.label[2].text = {}
+
+. gr_edit plotregion1.graph1.legend.plotregion1.label[2].text.Arrpush Untreated
+
+. gr_edit plotregion1.graph2.title.text = {}
+
+. gr_edit plotregion1.graph2.title.text.Arrpush {bf: B} Bias reduction
+
+. gr_edit plotregion1.graph2.title.style.editstyle box_alignment(nwest) editcopy
+
+. gr_edit style.editstyle margin(tiny) editcopy
+
+. gr_edit style.editstyle declared_ysize(2) editcopy
+
+. gr_edit style.editstyle declared_xsize(3.165) editcopy
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 1 25 `"Size of farmland (in ha)"', tickset(major)
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 2 75 `"Number of farms"', tickset(major)
+
+. gr_edit plotregion1.graph2.grpaxis.major.num_rule_ticks = 0
+
+. gr_edit plotregion1.graph2.grpaxis.edit_tick 2 75 `"Number of farms"', tickset(major)
+
+. gr export "$working_ANALYSIS/results/figures/figureS2_matching_ATU.tif", replace width(3465)
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/figures/figureS2_matching_ATU.tif written in T
+> IFF format)
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. gr export "$working_ANALYSIS/results/figures/figureS2_matching_ATU.tif", replace width(3465)
+(file D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/figures/figureS2_matching_ATU.tif written in T
+> IFF format)
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab  _support _treated, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+  psmatch2: |  psmatch2: Treatment
+     Common |      assignment
+    support | Untreated    Treated |     Total
+------------+----------------------+----------
+Off support |         0          1 |         1 
+            |      0.00       1.25 |      0.49 
+------------+----------------------+----------
+ On support |       123         79 |       202 
+            |    100.00      98.75 |     99.51 
+------------+----------------------+----------
+      Total |       123         80 |       203 
+            |    100.00     100.00 |    100.00 
+
+. 
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. * gen matched pair identifier
+. gen pair_ATU = _id if _treated==0 
+(80 missing values generated)
+
+. replace pair_ATU = _n1 if _treated==1
+(79 real changes made)
+
+. bysort pair_ATU: egen paircount_ATU = count(pair_ATU)
+
+. foreach x of varlist _weight _id _pscore _pdif _n1 _nn _treated _support pair_ATU paircount_ATU {
+  2.                 rename `x'  matched_ATU`x'
+  3. }
+
+. replace matched_ATU_treated=. if matched_ATUpaircount_ATU < 2
+(83 real changes made, 83 to missing)
+
+. 
+end of do-file
+
+. tab matched_ATU_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         41       34.17       34.17
+    Treated |         79       65.83      100.00
+------------+-----------------------------------
+      Total |        120      100.00
+
+. help psmatch2
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg donation_n $groups $socio_economic [fweight = matched_weight] , vce(cluster id)
+
+Linear regression                               Number of obs     =        234
+                                                F(9, 161)         =       9.78
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2364
+                                                Root MSE          =     6013.9
+
+                                     (Std. Err. adjusted for 162 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   492.6026   1302.635     0.38   0.706    -2079.852    3065.057
+       group_3 |   3393.362   1304.924     2.60   0.010     816.3877    5970.337
+        female |   1903.301    1281.02     1.49   0.139    -626.4674    4433.068
+        id_age |  -74.87887   43.86522    -1.71   0.090    -161.5043    11.74651
+   max_primary |    95.6563   1319.506     0.07   0.942    -2510.115    2701.428
+ income_hh_ppp |   1.171821   .1688158     6.94   0.000     .8384421      1.5052
+       farms_n |   9.134503   351.0972     0.03   0.979     -684.215     702.484
+     land_size |   18.63681    17.1412     1.09   0.279    -15.21377    52.48738
+residence_farm |   1249.198   1179.577     1.06   0.291     -1080.24    3578.636
+         _cons |   8132.569   2976.785     2.73   0.007     2253.991    14011.15
+--------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. *matched sample
+. reg donation_n $groups $socio_economic [fweight = matched_weight] , vce(cluster id)
+
+Linear regression                               Number of obs     =        234
+                                                F(9, 161)         =       9.78
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2364
+                                                Root MSE          =     6013.9
+
+                                     (Std. Err. adjusted for 162 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   492.6026   1302.635     0.38   0.706    -2079.852    3065.057
+       group_3 |   3393.362   1304.924     2.60   0.010     816.3877    5970.337
+        female |   1903.301    1281.02     1.49   0.139    -626.4674    4433.068
+        id_age |  -74.87887   43.86522    -1.71   0.090    -161.5043    11.74651
+   max_primary |    95.6563   1319.506     0.07   0.942    -2510.115    2701.428
+ income_hh_ppp |   1.171821   .1688158     6.94   0.000     .8384421      1.5052
+       farms_n |   9.134503   351.0972     0.03   0.979     -684.215     702.484
+     land_size |   18.63681    17.1412     1.09   0.279    -15.21377    52.48738
+residence_farm |   1249.198   1179.577     1.06   0.291     -1080.24    3578.636
+         _cons |   8132.569   2976.785     2.73   0.007     2253.991    14011.15
+--------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   161) =   10.61
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS3_donation_amount_matched", addstat("Adjusted R-squared", e(r2_a), "So
+> cio-economics", `F1') adec(2) word ctitle("Donation Amount") dec(2) replace
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS3_donation_amount_matched.rtf
+dir : seeout
+
+. 
+. * ATU with different matching approaches and controlling for socio-economics
+. reg donation_n $groups $socio_economic [fweight = matched_ATU_weight] , vce(cluster id)
+
+Linear regression                               Number of obs     =        158
+                                                F(9, 119)         =      11.32
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2906
+                                                Root MSE          =       6424
+
+                                     (Std. Err. adjusted for 120 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   2650.551   2451.916     1.08   0.282    -2204.488    7505.589
+       group_3 |   5557.946   1958.319     2.84   0.005     1680.278    9435.614
+        female |   945.2187   1814.072     0.52   0.603    -2646.824    4537.261
+        id_age |  -24.43751    48.8503    -0.50   0.618     -121.166    72.29097
+   max_primary |  -1605.649   2154.988    -0.75   0.458     -5872.74    2661.443
+ income_hh_ppp |   1.177092   .2387216     4.93   0.000     .7043996    1.649785
+       farms_n |   27.90872   509.2586     0.05   0.956    -980.4743    1036.292
+     land_size |   24.61611   22.12159     1.11   0.268    -19.18686    68.41907
+residence_farm |    1469.55   1483.857     0.99   0.324    -1468.634    4407.735
+         _cons |   5841.579   3624.531     1.61   0.110    -1335.355    13018.51
+--------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   119) =    7.94
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS3_donation_amount_matched", addstat("Adjusted R-squared", e(r2_a), "So
+> cio-economics", `F1') adec(2) word ctitle("Donation Amount") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS3_donation_amount_matched.rtf
+dir : seeout
+
+. 
+. *control for propensity score
+. reg donation_n $groups $socio_economic  matched_pscore, vce(hc3)
+
+Linear regression                               Number of obs     =        203
+                                                F(10, 192)        =       9.20
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2838
+                                                Root MSE          =     6224.9
+
+--------------------------------------------------------------------------------
+               |             Robust HC3
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   697.4812   1133.482     0.62   0.539    -1538.194    2933.156
+       group_3 |    3281.18   1134.424     2.89   0.004     1043.645    5518.715
+        female |   112.0997   1132.997     0.10   0.921     -2122.62    2346.819
+        id_age |  -46.96238   31.66475    -1.48   0.140    -109.4178    15.49307
+   max_primary |  -1542.137   1110.607    -1.39   0.167    -3732.694    648.4204
+ income_hh_ppp |   1.109017   .2124622     5.22   0.000     .6899575    1.528077
+       farms_n |   131.6609   459.3026     0.29   0.775     -774.266    1037.588
+     land_size |   5.791425   7.249677     0.80   0.425    -8.507811    20.09066
+residence_farm |   87.29972   1057.562     0.08   0.934    -1998.632    2173.231
+matched_pscore |    3329.48   6140.006     0.54   0.588    -8781.047    15440.01
+         _cons |   6695.591   4148.418     1.61   0.108    -1486.735    14877.92
+--------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   192) =    7.73
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS3_donation_amount_matched", addstat("Adjusted R-squared", e(r2_a), "So
+> cio-economics", `F1') adec(2) word ctitle("Donation Amount") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS3_donation_amount_matched.rtf
+dir : seeout
+
+. 
+. * IPTW as probability weight
+. reg donation_n $groups $socio_economic [pw = iptw],  vce(cluster id)
+(sum of wgt is 421.7839924097061)
+
+Linear regression                               Number of obs     =        203
+                                                F(9, 202)         =      11.29
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2734
+                                                Root MSE          =     6348.8
+
+                                     (Std. Err. adjusted for 203 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |  -173.6663   1422.196    -0.12   0.903    -2977.919    2630.587
+       group_3 |    2453.82   1388.214     1.77   0.079    -283.4283    5191.069
+        female |  -410.3051   1103.496    -0.37   0.710    -2586.154    1765.544
+        id_age |  -22.45228   35.40014    -0.63   0.527    -92.25347    47.34891
+   max_primary |  -2443.584   1263.046    -1.93   0.054    -4934.028    46.86127
+ income_hh_ppp |   .8530375   .2378036     3.59   0.000     .3841418    1.321933
+       farms_n |  -147.7947     433.34    -0.34   0.733    -1002.245    706.6553
+     land_size |   24.47329   13.85237     1.77   0.079    -2.840501    51.78709
+residence_farm |  -536.0671   1260.879    -0.43   0.671    -3022.239    1950.105
+         _cons |   9205.273   2772.444     3.32   0.001     3738.631    14671.91
+--------------------------------------------------------------------------------
+
+. testparm $socio_economic
+
+ ( 1)  female = 0
+ ( 2)  id_age = 0
+ ( 3)  max_primary = 0
+ ( 4)  income_hh_ppp = 0
+ ( 5)  farms_n = 0
+ ( 6)  land_size = 0
+ ( 7)  residence_farm = 0
+
+       F(  7,   202) =   13.31
+            Prob > F =    0.0000
+
+. local F1 = r(p)
+
+. outreg2 using "$working_ANALYSIS/results/tables/TableS3_donation_amount_matched", addstat("Adjusted R-squared", e(r2_a), "So
+> cio-economics", `F1') adec(2) word ctitle("Donation Amount") dec(2) append
+D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS3_donation_amount_matched.rtf
+dir : seeout
+
+. 
+end of do-file
+
+. shellout using `"D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package/results/tables/TableS3_donation_amount_ma
+> tched.rtf"'
+
+. tab matched_weight
+
+  psmatch2: |
+  weight of |
+    matched |
+   controls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        136       83.95       83.95
+          2 |          8        4.94       88.89
+          3 |          5        3.09       91.98
+          4 |          6        3.70       95.68
+          5 |          3        1.85       97.53
+          6 |          2        1.23       98.77
+          8 |          2        1.23      100.00
+------------+-----------------------------------
+      Total |        162      100.00
+
+. tab matched_support
+
+  psmatch2: |
+     Common |
+    support |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Off support |          6        2.96        2.96
+ On support |        197       97.04      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab matched_support
+
+  psmatch2: |
+     Common |
+    support |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Off support |          6        2.96        2.96
+ On support |        197       97.04      100.00
+------------+-----------------------------------
+      Total |        203      100.00
+
+. tab matched_support matched_treated
+
+  psmatch2: |  psmatch2: Treatment
+     Common |      assignment
+    support | Untreated    Treated |     Total
+------------+----------------------+----------
+ On support |        45        117 |       162 
+------------+----------------------+----------
+      Total |        45        117 |       162 
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg donation_n $groups $socio_economic [fweight = matched_weight] , vce(cluster id)
+
+Linear regression                               Number of obs     =        234
+                                                F(9, 161)         =       9.78
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2364
+                                                Root MSE          =     6013.9
+
+                                     (Std. Err. adjusted for 162 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   492.6026   1302.635     0.38   0.706    -2079.852    3065.057
+       group_3 |   3393.362   1304.924     2.60   0.010     816.3877    5970.337
+        female |   1903.301    1281.02     1.49   0.139    -626.4674    4433.068
+        id_age |  -74.87887   43.86522    -1.71   0.090    -161.5043    11.74651
+   max_primary |    95.6563   1319.506     0.07   0.942    -2510.115    2701.428
+ income_hh_ppp |   1.171821   .1688158     6.94   0.000     .8384421      1.5052
+       farms_n |   9.134503   351.0972     0.03   0.979     -684.215     702.484
+     land_size |   18.63681    17.1412     1.09   0.279    -15.21377    52.48738
+residence_farm |   1249.198   1179.577     1.06   0.291     -1080.24    3578.636
+         _cons |   8132.569   2976.785     2.73   0.007     2253.991    14011.15
+--------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. reg donation_n $groups $socio_economic [fweight = matched_ATU_weight] , vce(cluster id)
+
+Linear regression                               Number of obs     =        158
+                                                F(9, 119)         =      11.32
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2906
+                                                Root MSE          =       6424
+
+                                     (Std. Err. adjusted for 120 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+    donation_n |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       group_2 |   2650.551   2451.916     1.08   0.282    -2204.488    7505.589
+       group_3 |   5557.946   1958.319     2.84   0.005     1680.278    9435.614
+        female |   945.2187   1814.072     0.52   0.603    -2646.824    4537.261
+        id_age |  -24.43751    48.8503    -0.50   0.618     -121.166    72.29097
+   max_primary |  -1605.649   2154.988    -0.75   0.458     -5872.74    2661.443
+ income_hh_ppp |   1.177092   .2387216     4.93   0.000     .7043996    1.649785
+       farms_n |   27.90872   509.2586     0.05   0.956    -980.4743    1036.292
+     land_size |   24.61611   22.12159     1.11   0.268    -19.18686    68.41907
+residence_farm |    1469.55   1483.857     0.99   0.324    -1468.634    4407.735
+         _cons |   5841.579   3624.531     1.61   0.110    -1335.355    13018.51
+--------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. tab matched_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         45       27.78       27.78
+    Treated |        117       72.22      100.00
+------------+-----------------------------------
+      Total |        162      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. psmatch2 treated farms_n land_size, n(1) common
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(2)        =      18.41
+                                                Prob > chi2       =     0.0001
+Log likelihood = -126.91314                     Pseudo R2         =     0.0676
+
+------------------------------------------------------------------------------
+     treated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |   .0277608   .0761993     0.36   0.716    -.1215871    .1771087
+   land_size |   .0102198   .0030741     3.32   0.001     .0041946    .0162449
+       _cons |  -.0476736     .16286    -0.29   0.770    -.3668732    .2715261
+------------------------------------------------------------------------------
+Note: 0 failures and 1 success completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  |  1.878   1.6125     20.7         |   1.42  0.157 |  1.27
+                       M  |  1.812    2.094    -22.0    -6.2 |  -1.42  0.158 |  0.53*
+                          |                                  |               |
+land_size              U  | 51.415   15.554     43.6         |   2.78  0.006 | 15.63*
+                       M  | 31.473   30.621      1.0    97.6 |   0.19  0.847 |  0.98
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.70; 1.43] for U and [0.69; 1.44] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*  14.97*    50
+ Matched   | 0.007      2.21    0.331     11.5      11.5      19.2    0.51     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. psmatch2 untreated farms_n land_size,  n(1) common
+
+Probit regression                               Number of obs     =        203
+                                                LR chi2(2)        =      18.41
+                                                Prob > chi2       =     0.0001
+Log likelihood = -126.91314                     Pseudo R2         =     0.0676
+
+------------------------------------------------------------------------------
+   untreated |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     farms_n |  -.0277608   .0761993    -0.36   0.716    -.1771087    .1215871
+   land_size |  -.0102198   .0030741    -3.32   0.001    -.0162449   -.0041946
+       _cons |   .0476736     .16286     0.29   0.770    -.2715261    .3668732
+------------------------------------------------------------------------------
+Note: 1 failure and 0 successes completely determined.
+
+. 
+end of do-file
+
+. do "C:\Users\istei\AppData\Local\Temp\STD950_000000.tmp"
+
+. pstest farms_n land_size, both graph legend(rows(1) pos(6) ring(1)) 
+
+----------------------------------------------------------------------------------------
+                Unmatched |       Mean               %reduct |     t-test    |  V(T)/
+Variable          Matched | Treated Control    %bias  |bias| |    t    p>|t| |  V(C)
+--------------------------+----------------------------------+---------------+----------
+farms_n                U  | 1.6125    1.878    -20.7         |  -1.42  0.157 |  0.79
+                       M  | 1.6203   1.3291     22.7    -9.6 |   1.68  0.094 |  1.65*
+                          |                                  |               |
+land_size              U  | 15.554   51.415    -43.6         |  -2.78  0.006 |  0.06*
+                       M  |  15.75   16.876     -1.4    96.9 |  -0.24  0.814 |  0.84
+                          |                                  |               |
+----------------------------------------------------------------------------------------
+* if variance ratio outside [0.64; 1.56] for U and [0.64; 1.56] for M
+
+-----------------------------------------------------------------------------------
+ Sample    | Ps R2   LR chi2   p>chi2   MeanBias   MedBias      B      R     %Var
+-----------+-----------------------------------------------------------------------
+ Unmatched | 0.068     18.41    0.000     32.1      32.1      43.9*   0.07*    50
+ Matched   | 0.015      3.23    0.199     12.0      12.0      28.0*   1.47     50
+-----------------------------------------------------------------------------------
+* if B>25%, R outside [0.5; 2]
+
+. 
+end of do-file
+
+. tab matched_ATU_treated
+
+  psmatch2: |
+  Treatment |
+ assignment |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Untreated |         41       34.17       34.17
+    Treated |         79       65.83      100.00
+------------+-----------------------------------
+      Total |        120      100.00
+
+. exit, clear
