@@ -17,7 +17,7 @@
 * Set global Working Directory
 *--------------------------------------------------
 * Define this global macro to point where the replication folder is saved locally that includes this run.do script
-global working_ANALYSIS "D:\OneDrive\Promotion\1_Projects\PES_Colombia\replication_package"
+global working_ANALYSIS ""
 
 
 *--------------------------------------------------
